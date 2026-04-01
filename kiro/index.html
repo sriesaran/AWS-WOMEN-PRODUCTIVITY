@@ -1,0 +1,5437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HerDay AI — Your Personal Productivity Companion</title>
+  <style>
+    /* =====================================================
+       CSS CUSTOM PROPERTIES — Design Tokens
+    ===================================================== */
+    :root {
+      /* Pastel Feminine Palette */
+      --color-pink-50:   #fff0f5;
+      --color-pink-100:  #ffe0ec;
+      --color-pink-200:  #ffb3cc;
+      --color-pink-300:  #ff80aa;
+      --color-pink-400:  #ff4d88;
+      --color-pink-500:  #e6005c;
+
+      --color-lavender-50:  #f5f0ff;
+      --color-lavender-100: #ede0ff;
+      --color-lavender-200: #d4b3ff;
+      --color-lavender-300: #b980ff;
+      --color-lavender-400: #9d4dff;
+      --color-lavender-500: #7a00e6;
+
+      --color-mint-50:  #f0fff8;
+      --color-mint-100: #d6fff0;
+      --color-mint-200: #a3f5d9;
+      --color-mint-300: #66e8be;
+      --color-mint-400: #2dd4a0;
+      --color-mint-500: #00b37a;
+
+      --color-peach-50:  #fff5f0;
+      --color-peach-100: #ffe8d6;
+      --color-peach-200: #ffcba3;
+      --color-peach-300: #ffaa66;
+      --color-peach-400: #ff8833;
+      --color-peach-500: #e65c00;
+
+      --color-sky-50:  #f0f8ff;
+      --color-sky-100: #d6eeff;
+      --color-sky-200: #a3d4ff;
+
+      /* Semantic Colors — Gold + Teal on Navy */
+      --color-primary:        #ffd700;
+      --color-primary-dark:   #e6c200;
+      --color-primary-light:  #fff3b0;
+      --color-secondary:      #00e5ff;
+      --color-secondary-dark: #00b8d4;
+      --color-accent:         #69f0ae;
+      --color-accent-dark:    #00c853;
+      --color-warning:        #ffab40;
+      --color-warning-dark:   #ff6d00;
+      --color-success:        #69f0ae;
+      --color-danger:         #ff5252;
+      --color-info:           #40c4ff;
+
+      /* Backgrounds — Deep Navy + Electric Gold theme */
+      --bg-app:       #0d1b2a;
+      --bg-card:      #162032;
+      --bg-nav:       #0d1b2a;
+      --bg-modal:     rgba(0, 0, 0, 0.6);
+      --bg-input:     #1e2f42;
+      --bg-section:   #0d1b2a;
+
+      /* Text */
+      --text-primary:   #f0f4f8;
+      --text-secondary: #a8c0d6;
+      --text-muted:     #5a7a96;
+      --text-on-dark:   #ffffff;
+      --text-link:      #ffd700;
+
+      /* Typography */
+      --font-family:   'Segoe UI', system-ui, -apple-system, sans-serif;
+      --font-size-xs:  0.75rem;
+      --font-size-sm:  0.875rem;
+      --font-size-md:  1rem;
+      --font-size-lg:  1.125rem;
+      --font-size-xl:  1.25rem;
+      --font-size-2xl: 1.5rem;
+      --font-size-3xl: 1.875rem;
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+      --line-height-tight:  1.25;
+      --line-height-normal: 1.5;
+      --line-height-loose:  1.75;
+
+      /* Spacing */
+      --space-1:  0.25rem;
+      --space-2:  0.5rem;
+      --space-3:  0.75rem;
+      --space-4:  1rem;
+      --space-5:  1.25rem;
+      --space-6:  1.5rem;
+      --space-8:  2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+
+      /* Border Radius */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.75rem;
+      --radius-lg:   1rem;
+      --radius-xl:   1.5rem;
+      --radius-2xl:  2rem;
+      --radius-full: 9999px;
+
+      /* Shadows */
+      --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-lg:  0 8px 24px rgba(0, 0, 0, 0.5);
+      --shadow-xl:  0 16px 40px rgba(0, 0, 0, 0.6);
+
+      /* Transitions */
+      --transition-fast:   150ms ease;
+      --transition-normal: 250ms ease;
+      --transition-slow:   400ms ease;
+
+      /* Nav */
+      --nav-height: 64px;
+      --nav-width-desktop: 220px;
+    }
+
+    /* =====================================================
+       RESET & BASE
+    ===================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-size-md);
+      color: var(--text-primary);
+      background: var(--bg-app);
+      line-height: var(--line-height-normal);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--text-link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    ul, ol { list-style: none; }
+
+    img, svg { display: block; max-width: 100%; }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    input, select, textarea {
+      font-family: inherit;
+      font-size: var(--font-size-md);
+    }
+
+    /* =====================================================
+       TYPOGRAPHY UTILITIES
+    ===================================================== */
+    .text-xs  { font-size: var(--font-size-xs); }
+    .text-sm  { font-size: var(--font-size-sm); }
+    .text-lg  { font-size: var(--font-size-lg); }
+    .text-xl  { font-size: var(--font-size-xl); }
+    .text-2xl { font-size: var(--font-size-2xl); }
+    .text-3xl { font-size: var(--font-size-3xl); }
+    .font-medium   { font-weight: var(--font-weight-medium); }
+    .font-semibold { font-weight: var(--font-weight-semibold); }
+    .font-bold     { font-weight: var(--font-weight-bold); }
+    .text-muted    { color: var(--text-muted); }
+    .text-secondary { color: var(--text-secondary); }
+
+    /* =====================================================
+       LAYOUT — APP SHELL
+    ===================================================== */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Mobile: top nav bar */
+    .nav-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-height);
+      background: var(--bg-nav);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary-dark);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo span { color: var(--color-secondary); }
+
+    .nav-menu-btn {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: var(--space-2);
+      border-radius: var(--radius-sm);
+    }
+
+    .nav-menu-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-primary);
+      border-radius: var(--radius-full);
+      transition: transform var(--transition-normal), opacity var(--transition-normal);
+    }
+
+    /* Sidebar nav (mobile: drawer, desktop: fixed side) */
+    .nav-sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 280px;
+      height: 100vh;
+      background: var(--bg-nav);
+      box-shadow: var(--shadow-xl);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-6) 0;
+      transform: translateX(-100%);
+      transition: transform var(--transition-normal);
+    }
+
+    .nav-sidebar.open { transform: translateX(0); }
+
+    .nav-sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-6) var(--space-6);
+      border-bottom: 1px solid var(--color-pink-100);
+    }
+
+    .nav-close-btn {
+      font-size: var(--font-size-xl);
+      color: var(--text-muted);
+      padding: var(--space-1);
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast);
+    }
+
+    .nav-close-btn:hover { color: var(--text-primary); }
+
+    .nav-links {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4) 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-6);
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-secondary);
+      border-radius: 0;
+      transition: background var(--transition-fast), color var(--transition-fast);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-link:hover {
+      background: var(--color-pink-50);
+      color: var(--color-primary-dark);
+    }
+
+    .nav-link.active {
+      background: var(--color-pink-100);
+      color: var(--color-primary-dark);
+      font-weight: var(--font-weight-semibold);
+      border-right: 3px solid var(--color-primary);
+    }
+
+    .nav-link .nav-icon { font-size: 1.2em; }
+
+    .nav-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg-modal);
+      z-index: 150;
+    }
+
+    .nav-overlay.open { display: block; }
+
+    /* Main content area */
+    .main-content {
+      margin-top: var(--nav-height);
+      flex: 1;
+      padding: var(--space-6) var(--space-4);
+      max-width: 900px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* =====================================================
+       SECTION PANELS
+    ===================================================== */
+    .section-panel {
+      display: none;
+      animation: fadeIn var(--transition-normal) ease;
+    }
+
+    .section-panel.active { display: block; }
+
+    .section-header {
+      margin-bottom: var(--space-6);
+    }
+
+    .section-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      line-height: var(--line-height-tight);
+    }
+
+    .section-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      margin-top: var(--space-1);
+    }
+
+    /* Grid layout for section content */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    /* =====================================================
+       CARDS
+    ===================================================== */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-pink-100);
+      transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .card-body { color: var(--text-secondary); }
+
+    .card-pink    { border-top: 3px solid var(--color-pink-300); }
+    .card-lavender { border-top: 3px solid var(--color-lavender-300); }
+    .card-mint    { border-top: 3px solid var(--color-mint-300); }
+    .card-peach   { border-top: 3px solid var(--color-peach-300); }
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+      cursor: pointer;
+      border: none;
+      line-height: 1;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: var(--text-on-dark);
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-dark);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: var(--color-lavender-200);
+      color: var(--color-lavender-500);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-lavender-300);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-accent {
+      background: var(--color-accent);
+      color: var(--text-on-dark);
+    }
+
+    .btn-accent:hover {
+      background: var(--color-accent-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-danger {
+      background: #ffe0e0;
+      color: var(--color-danger);
+    }
+
+    .btn-danger:hover {
+      background: #ffcccc;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1.5px solid var(--color-pink-200);
+    }
+
+    .btn-ghost:hover {
+      background: var(--color-pink-50);
+      border-color: var(--color-primary);
+      color: var(--color-primary-dark);
+    }
+
+    .btn-sm {
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--font-size-xs);
+    }
+
+    .btn-lg {
+      padding: var(--space-4) var(--space-8);
+      font-size: var(--font-size-lg);
+    }
+
+    .btn-icon {
+      padding: var(--space-2);
+      border-radius: var(--radius-full);
+      width: 36px;
+      height: 36px;
+    }
+
+    .btn-sos {
+      background: linear-gradient(135deg, #ff4d4d, #e60000);
+      color: #fff;
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      padding: var(--space-4) var(--space-8);
+      border-radius: var(--radius-full);
+      box-shadow: 0 4px 16px rgba(230, 0, 0, 0.35);
+      letter-spacing: 0.05em;
+    }
+
+    .btn-sos:hover {
+      background: linear-gradient(135deg, #e60000, #cc0000);
+      box-shadow: 0 6px 20px rgba(230, 0, 0, 0.45);
+    }
+
+    /* =====================================================
+       FORM ELEMENTS
+    ===================================================== */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-secondary);
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      background: var(--bg-input);
+      border: 1.5px solid var(--color-pink-200);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: var(--font-size-md);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      outline: none;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(255, 128, 170, 0.2);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder { color: var(--text-muted); }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b08fa0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right var(--space-4) center;
+      padding-right: var(--space-10);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-error {
+      font-size: var(--font-size-xs);
+      color: var(--color-danger);
+      display: none;
+    }
+
+    .form-error.visible { display: block; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    /* Checkbox & Radio */
+    .form-check {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+    }
+
+    .form-check input[type="checkbox"],
+    .form-check input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    /* Range input */
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--color-primary);
+    }
+
+    /* =====================================================
+       PROGRESS BARS
+    ===================================================== */
+    .progress-bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: var(--color-pink-100);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      border-radius: var(--radius-full);
+      transition: width var(--transition-slow);
+    }
+
+    .progress-bar-fill.mint {
+      background: linear-gradient(90deg, var(--color-mint-300), var(--color-mint-400));
+    }
+
+    .progress-bar-fill.peach {
+      background: linear-gradient(90deg, var(--color-peach-200), var(--color-peach-400));
+    }
+
+    /* =====================================================
+       BADGES & TAGS
+    ===================================================== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .badge-high   { background: #ffe0e0; color: #cc0000; }
+    .badge-medium { background: #fff3d6; color: #b36b00; }
+    .badge-low    { background: var(--color-mint-100); color: var(--color-mint-500); }
+    .badge-pink   { background: var(--color-pink-100); color: var(--color-pink-500); }
+    .badge-lavender { background: var(--color-lavender-100); color: var(--color-lavender-500); }
+    .badge-mint   { background: var(--color-mint-100); color: var(--color-mint-500); }
+
+    /* =====================================================
+       MODALS
+    ===================================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg-modal);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn var(--transition-normal) ease;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-8);
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+      animation: modalEntrance var(--transition-slow) cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: var(--space-6);
+    }
+
+    .modal-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+    }
+
+    .modal-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      margin-top: var(--space-1);
+    }
+
+    .modal-close {
+      font-size: var(--font-size-xl);
+      color: var(--text-muted);
+      padding: var(--space-1);
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover { color: var(--text-primary); }
+
+    .modal-footer {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: flex-end;
+      margin-top: var(--space-6);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-pink-100);
+    }
+
+    /* =====================================================
+       TOAST NOTIFICATIONS
+    ===================================================== */
+    .toast-container {
+      position: fixed;
+      bottom: var(--space-6);
+      right: var(--space-4);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      pointer-events: none;
+    }
+
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-5);
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-primary);
+      min-width: 240px;
+      max-width: 340px;
+      pointer-events: auto;
+      animation: toastSlideIn var(--transition-normal) ease;
+      border-left: 4px solid var(--color-primary);
+    }
+
+    .toast.info    { border-left-color: var(--color-info); }
+    .toast.success { border-left-color: var(--color-success); }
+    .toast.warning { border-left-color: var(--color-warning); }
+    .toast.error   { border-left-color: var(--color-danger); }
+
+    .toast-icon { font-size: 1.2em; flex-shrink: 0; }
+
+    .toast.removing {
+      animation: toastSlideOut var(--transition-normal) ease forwards;
+    }
+
+    /* =====================================================
+       CHATBOT WIDGET
+    ===================================================== */
+    .chatbot-toggle {
+      position: fixed;
+      bottom: var(--space-6);
+      right: var(--space-4);
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, #e53935, #b71c1c);
+      color: #fff;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(183, 28, 28, 0.5);
+      z-index: 400;
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+      cursor: pointer;
+      border: none;
+    }
+
+    .chatbot-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 28px rgba(183, 28, 28, 0.65);
+    }
+
+    .chatbot-panel {
+      position: fixed;
+      bottom: calc(var(--space-6) + 72px);
+      right: var(--space-4);
+      width: 340px;
+      max-height: 520px;
+      background: #fff;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 8px 32px rgba(183, 28, 28, 0.22);
+      z-index: 400;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1.5px solid #ef9a9a;
+      animation: modalEntrance var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .chatbot-panel.open { display: flex; }
+
+    .chatbot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-5);
+      background: linear-gradient(135deg, #e53935, #b71c1c);
+      color: #fff;
+    }
+
+    .chatbot-header-info { display: flex; align-items: center; gap: var(--space-2); }
+
+    .chatbot-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .chatbot-name {
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+    }
+
+    .chatbot-status {
+      font-size: var(--font-size-xs);
+      opacity: 0.85;
+    }
+
+    .chatbot-close {
+      color: rgba(255,255,255,0.8);
+      font-size: var(--font-size-lg);
+      padding: var(--space-1);
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast);
+    }
+
+    .chatbot-close:hover { color: #fff; }
+
+    .chatbot-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      background: #fff8f8;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-normal);
+    }
+
+    .chat-bubble.bot {
+      background: #fce4e4;
+      color: #3d1a1a;
+      border-bottom-left-radius: var(--radius-sm);
+      align-self: flex-start;
+      border-left: 3px solid #e53935;
+    }
+
+    .chat-bubble.user {
+      background: linear-gradient(135deg, #e53935, #b71c1c);
+      color: #fff;
+      border-bottom-right-radius: var(--radius-sm);
+      align-self: flex-end;
+    }
+
+    .chat-typing {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: var(--space-3) var(--space-4);
+      background: #fce4e4;
+      border-radius: var(--radius-lg);
+      border-bottom-left-radius: var(--radius-sm);
+      align-self: flex-start;
+    }
+
+    .chat-typing span {
+      width: 6px;
+      height: 6px;
+      background: #e53935;
+      border-radius: var(--radius-full);
+      animation: typingDot 1.2s infinite;
+    }
+
+    .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+    .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    .chatbot-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      padding: 0 var(--space-4) var(--space-2);
+      background: #fff8f8;
+    }
+
+    .suggestion-chip {
+      padding: var(--space-1) var(--space-3);
+      background: #fce4e4;
+      border: 1px solid #ef9a9a;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      color: #b71c1c;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+
+    .suggestion-chip:hover { background: #ffcdd2; }
+
+    .chatbot-input-row {
+      display: flex;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      border-top: 1px solid #ef9a9a;
+      background: #fff8f8;
+    }
+
+    .chatbot-input {
+      flex: 1;
+      padding: var(--space-2) var(--space-3);
+      background: #fff;
+      border: 1.5px solid #ef9a9a;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+
+    .chatbot-input:focus { border-color: #e53935; }
+
+    .chatbot-send {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, #e53935, #b71c1c);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      transition: background var(--transition-fast);
+    }
+
+    .chatbot-send:hover { background: #b71c1c; }
+
+    /* =====================================================
+       DASHBOARD SECTION
+    ===================================================== */
+    .dashboard-greeting {
+      margin-bottom: var(--space-6);
+    }
+
+    .greeting-text {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+    }
+
+    .greeting-date {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      margin-top: var(--space-1);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-pink-100);
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary-dark);
+    }
+
+    .stat-label {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-1);
+    }
+
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    /* =====================================================
+       TASK SECTION
+    ===================================================== */
+    .task-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .filter-btn {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      background: var(--color-pink-50);
+      color: var(--text-secondary);
+      border: 1.5px solid var(--color-pink-200);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+
+    .task-list { display: flex; flex-direction: column; gap: var(--space-3); }
+
+    .task-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-pink-100);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      transition: box-shadow var(--transition-normal), opacity var(--transition-normal);
+    }
+
+    .task-card.completed { opacity: 0.6; }
+
+    .task-card.completed .task-title { text-decoration: line-through; }
+
+    .task-checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--color-primary);
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .task-info { flex: 1; min-width: 0; }
+
+    .task-title {
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: var(--space-1);
+      flex-shrink: 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-12) var(--space-4);
+      color: var(--text-muted);
+    }
+
+    .empty-state-icon { font-size: 3rem; margin-bottom: var(--space-3); }
+
+    .empty-state-text {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-medium);
+      margin-bottom: var(--space-2);
+    }
+
+    .empty-state-sub { font-size: var(--font-size-sm); }
+
+    /* =====================================================
+       PLANNER SECTION
+    ===================================================== */
+    .planner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+
+    .time-blocks { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    .time-block {
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-start;
+    }
+
+    .time-block-time {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      font-weight: var(--font-weight-semibold);
+      min-width: 80px;
+      padding-top: var(--space-3);
+    }
+
+    .time-block-card {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .time-block-card.task      { background: var(--color-pink-50); border-left: 3px solid var(--color-primary); }
+    .time-block-card.break     { background: var(--color-mint-50); border-left: 3px solid var(--color-mint-300); }
+    .time-block-card.meal      { background: var(--color-peach-50); border-left: 3px solid var(--color-peach-300); }
+    .time-block-card.self-care { background: var(--color-lavender-50); border-left: 3px solid var(--color-lavender-300); }
+
+    .planner-explanation {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      background: var(--color-lavender-50);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      border-left: 3px solid var(--color-lavender-300);
+    }
+
+    /* =====================================================
+       WELLNESS SECTION
+    ===================================================== */
+    .mood-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .mood-btn {
+      font-size: 1.75rem;
+      padding: var(--space-2);
+      border-radius: var(--radius-md);
+      background: var(--color-pink-50);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .mood-btn:hover,
+    .mood-btn.selected {
+      background: var(--color-pink-100);
+      border-color: var(--color-primary);
+      transform: scale(1.1);
+    }
+
+    .water-tracker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    .water-glass {
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform var(--transition-fast), filter var(--transition-fast);
+      filter: grayscale(0.6);
+    }
+
+    .water-glass.active { filter: none; transform: scale(1.05); }
+
+    .weekly-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: var(--space-1);
+    }
+
+    .day-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-2) var(--space-1);
+      background: var(--color-pink-50);
+      border-radius: var(--radius-sm);
+    }
+
+    .day-cell-label { font-size: var(--font-size-xs); color: var(--text-muted); }
+    .day-cell-mood  { font-size: 1.1rem; }
+
+    /* =====================================================
+       HABITS SECTION
+    ===================================================== */
+    .habit-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-pink-100);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .habit-streak {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 48px;
+    }
+
+    .streak-count {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-peach-400);
+      line-height: 1;
+    }
+
+    .streak-label { font-size: var(--font-size-xs); color: var(--text-muted); }
+
+    .habit-info { flex: 1; }
+
+    .habit-name {
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+    }
+
+    .habit-freq { font-size: var(--font-size-xs); color: var(--text-muted); }
+
+    /* =====================================================
+       GOALS SECTION
+    ===================================================== */
+    .goal-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-pink-100);
+    }
+
+    .goal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+    }
+
+    .goal-title {
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+    }
+
+    .goal-desc {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+    }
+
+    .goal-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    /* =====================================================
+       SAFETY SECTION
+    ===================================================== */
+    .contact-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-pink-100);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .contact-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--color-pink-200), var(--color-lavender-200));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .contact-info { flex: 1; }
+
+    .contact-name {
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+    }
+
+    .contact-phone { font-size: var(--font-size-sm); color: var(--text-secondary); }
+    .contact-relation { font-size: var(--font-size-xs); color: var(--text-muted); }
+
+    .sos-section {
+      text-align: center;
+      padding: var(--space-8) var(--space-4);
+      background: linear-gradient(135deg, #fff0f0, #fff5f5);
+      border-radius: var(--radius-xl);
+      border: 2px dashed #ffcccc;
+      margin-bottom: var(--space-6);
+    }
+
+    .sos-icon { font-size: 3rem; margin-bottom: var(--space-3); }
+
+    .sos-text {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .sos-sub {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      margin-bottom: var(--space-5);
+    }
+
+    /* =====================================================
+       ANALYTICS SECTION
+    ===================================================== */
+    .chart-container { margin-bottom: var(--space-6); }
+
+    .chart-title {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .bar-chart { display: flex; flex-direction: column; gap: var(--space-3); }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .bar-label {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      min-width: 80px;
+      text-align: right;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 20px;
+      background: var(--color-pink-100);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      border-radius: var(--radius-full);
+      transition: width var(--transition-slow);
+    }
+
+    .bar-value {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-secondary);
+      min-width: 36px;
+    }
+
+    /* =====================================================
+       SETTINGS SECTION
+    ===================================================== */
+    .settings-section-title {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-pink-100);
+    }
+
+    /* =====================================================
+       ANIMATIONS
+    ===================================================== */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes modalEntrance {
+      from {
+        opacity: 0;
+        transform: scale(0.88) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes toastSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(60px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes toastSlideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(60px);
+      }
+    }
+
+    @keyframes typingDot {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30%            { transform: translateY(-5px); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.05); }
+    }
+
+    /* =====================================================
+       RESPONSIVE — TABLET & DESKTOP
+    ===================================================== */
+    @media (min-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(4, 1fr); }
+      .content-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (min-width: 900px) {
+      .nav-menu-btn { display: none; }
+
+      .nav-sidebar {
+        position: fixed;
+        top: 0; left: 0;
+        transform: translateX(0);
+        width: var(--nav-width-desktop);
+        box-shadow: var(--shadow-sm);
+        border-right: 1px solid var(--color-pink-100);
+      }
+
+      .nav-bar { left: var(--nav-width-desktop); }
+
+      .main-content {
+        margin-left: var(--nav-width-desktop);
+        margin-top: var(--nav-height);
+        padding: var(--space-8);
+      }
+
+      .nav-overlay { display: none !important; }
+
+      .chatbot-panel { width: 360px; max-height: 520px; right: var(--space-4); left: auto; }
+    }
+
+    @media (min-width: 1200px) {
+      .main-content { max-width: calc(900px + var(--nav-width-desktop)); }
+      .content-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* =====================================================
+       UTILITY CLASSES
+    ===================================================== */
+    .hidden  { display: none !important; }
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: var(--space-2); }
+    .gap-3 { gap: var(--space-3); }
+    .gap-4 { gap: var(--space-4); }
+    .mt-2 { margin-top: var(--space-2); }
+    .mt-4 { margin-top: var(--space-4); }
+    .mt-6 { margin-top: var(--space-6); }
+    .mb-4 { margin-bottom: var(--space-4); }
+    .mb-6 { margin-bottom: var(--space-6); }
+    .w-full { width: 100%; }
+    .text-center { text-align: center; }
+
+    /* =====================================================
+       DARK NAVY THEME OVERRIDES
+       Replaces pink/lavender references with gold/teal on navy
+    ===================================================== */
+
+    /* Cards */
+    .card {
+      background: #162032;
+      border: 1px solid #1e3a52;
+    }
+    .card:hover { box-shadow: 0 6px 24px rgba(0,229,255,0.12); transform: translateY(-2px); }
+    .card-title { color: #f0f4f8; }
+    .card-body  { color: #a8c0d6; }
+    .card-pink    { border-top: 3px solid #ffd700; }
+    .card-lavender { border-top: 3px solid #00e5ff; }
+    .card-mint    { border-top: 3px solid #69f0ae; }
+    .card-peach   { border-top: 3px solid #ffab40; }
+
+    /* Nav */
+    .nav-bar { background: #0a1520; border-bottom: 1px solid #1e3a52; }
+    .nav-sidebar { background: #0a1520; border-right: 1px solid #1e3a52; }
+    .nav-sidebar-header { border-bottom: 1px solid #1e3a52; }
+    .nav-logo { color: #ffd700; }
+    .nav-logo span { color: #00e5ff; }
+    .nav-link { color: #a8c0d6; }
+    .nav-link:hover { background: #1e3a52; color: #ffd700; }
+    .nav-link.active { background: #1e3a52; color: #ffd700; border-right: 3px solid #ffd700; font-weight: 700; }
+    .nav-menu-btn span { background: #f0f4f8; }
+    .nav-close-btn { color: #a8c0d6; }
+    .nav-close-btn:hover { color: #ffd700; }
+
+    /* Stat cards */
+    .stat-card { background: #162032; border: 1px solid #1e3a52; }
+    .stat-value { color: #ffd700; }
+    .stat-label { color: #5a7a96; }
+
+    /* Badges */
+    .badge-high   { background: rgba(255,82,82,0.2); color: #ff5252; }
+    .badge-medium { background: rgba(255,171,64,0.2); color: #ffab40; }
+    .badge-low    { background: rgba(105,240,174,0.2); color: #69f0ae; }
+    .badge-pink   { background: rgba(255,215,0,0.15); color: #ffd700; }
+    .badge-lavender { background: rgba(0,229,255,0.15); color: #00e5ff; }
+    .badge-mint   { background: rgba(105,240,174,0.15); color: #69f0ae; }
+
+    /* Buttons */
+    .btn-primary { background: #ffd700; color: #0d1b2a; }
+    .btn-primary:hover { background: #e6c200; box-shadow: 0 4px 16px rgba(255,215,0,0.35); }
+    .btn-secondary { background: rgba(0,229,255,0.15); color: #00e5ff; }
+    .btn-secondary:hover { background: rgba(0,229,255,0.25); }
+    .btn-accent { background: #69f0ae; color: #0d1b2a; }
+    .btn-accent:hover { background: #00c853; }
+    .btn-ghost { background: transparent; color: #a8c0d6; border: 1.5px solid #1e3a52; }
+    .btn-ghost:hover { background: #1e3a52; border-color: #ffd700; color: #ffd700; }
+    .btn-danger { background: rgba(255,82,82,0.15); color: #ff5252; }
+    .btn-danger:hover { background: rgba(255,82,82,0.25); }
+
+    /* Forms */
+    .form-label { color: #a8c0d6; }
+    .form-input, .form-select, .form-textarea {
+      background: #1e2f42;
+      border: 1.5px solid #1e3a52;
+      color: #f0f4f8;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 0 3px rgba(255,215,0,0.15);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #5a7a96; }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a7a96' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+    .form-error { color: #ff5252; }
+
+    /* Progress bars */
+    .progress-bar-wrap { background: #1e3a52; }
+    .progress-bar-fill { background: linear-gradient(90deg, #ffd700, #00e5ff); }
+
+    /* Modals */
+    .modal { background: #162032; }
+    .modal-title { color: #f0f4f8; }
+    .modal-subtitle { color: #a8c0d6; }
+    .modal-close { color: #5a7a96; }
+    .modal-close:hover { color: #ffd700; }
+    .modal-footer { border-top: 1px solid #1e3a52; }
+
+    /* Toasts */
+    .toast { background: #162032; color: #f0f4f8; border-left-color: #ffd700; }
+    .toast.info    { border-left-color: #00e5ff; }
+    .toast.success { border-left-color: #69f0ae; }
+    .toast.warning { border-left-color: #ffab40; }
+    .toast.error   { border-left-color: #ff5252; }
+
+    /* Section titles */
+    .section-title { color: #f0f4f8; }
+    .section-subtitle { color: #5a7a96; }
+    .settings-section-title { color: #a8c0d6; border-bottom: 1px solid #1e3a52; }
+
+    /* Task cards */
+    .task-card { background: #162032; border: 1px solid #1e3a52; }
+    .task-card.completed { opacity: 0.5; }
+    .task-title { color: #f0f4f8; }
+    .task-filters { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .filter-btn { background: #1e2f42; color: #a8c0d6; border: 1.5px solid #1e3a52; }
+    .filter-btn.active, .filter-btn:hover { background: #ffd700; color: #0d1b2a; border-color: #ffd700; }
+
+    /* Planner */
+    .time-block-card.task      { background: rgba(255,215,0,0.08); border-left: 3px solid #ffd700; color: #f0f4f8; }
+    .time-block-card.break     { background: rgba(105,240,174,0.08); border-left: 3px solid #69f0ae; color: #f0f4f8; }
+    .time-block-card.meal      { background: rgba(255,171,64,0.08); border-left: 3px solid #ffab40; color: #f0f4f8; }
+    .time-block-card.self-care { background: rgba(0,229,255,0.08); border-left: 3px solid #00e5ff; color: #f0f4f8; }
+    .time-block-time { color: #5a7a96; }
+    .planner-explanation { background: rgba(0,229,255,0.06); border-left: 3px solid #00e5ff; color: #a8c0d6; }
+
+    /* Wellness */
+    .mood-btn { background: #1e2f42; border: 2px solid transparent; }
+    .mood-btn:hover, .mood-btn.selected { background: #1e3a52; border-color: #ffd700; }
+    .day-cell { background: #1e2f42; }
+    .day-cell-label { color: #5a7a96; }
+
+    /* Habits */
+    .habit-card { background: #162032; border: 1px solid #1e3a52; }
+    .habit-name { color: #f0f4f8; }
+    .habit-freq { color: #5a7a96; }
+    .streak-count { color: #ffd700; }
+    .streak-label { color: #5a7a96; }
+
+    /* Goals */
+    .goal-card { background: #162032; border: 1px solid #1e3a52; }
+    .goal-title { color: #f0f4f8; }
+    .goal-desc  { color: #a8c0d6; }
+
+    /* Safety */
+    .contact-card { background: #162032; border: 1px solid #1e3a52; }
+    .contact-name { color: #f0f4f8; }
+    .contact-phone { color: #a8c0d6; }
+    .contact-relation { color: #5a7a96; }
+    .sos-section { background: linear-gradient(135deg, rgba(255,82,82,0.1), rgba(255,82,82,0.05)); border: 2px dashed rgba(255,82,82,0.4); }
+    .sos-text { color: #f0f4f8; }
+    .sos-sub  { color: #5a7a96; }
+
+    /* Analytics */
+    .bar-track { background: #1e3a52; }
+    .bar-fill  { background: linear-gradient(90deg, #ffd700, #00e5ff); }
+    .bar-label { color: #a8c0d6; }
+    .bar-value { color: #ffd700; }
+    .chart-title { color: #f0f4f8; }
+
+    /* Dashboard */
+    .greeting-text { color: #ffd700; }
+    .greeting-date { color: #5a7a96; }
+
+    /* Empty states */
+    .empty-state { color: #5a7a96; }
+    .empty-state-text { color: #a8c0d6; }
+
+    /* Nav overlay */
+    .nav-overlay { background: rgba(0,0,0,0.7); }
+
+    /* Chatbot — gold/teal on dark */
+    .chatbot-toggle {
+      background: linear-gradient(135deg, #ffd700, #ffab40) !important;
+      color: #0d1b2a !important;
+      box-shadow: 0 4px 20px rgba(255,215,0,0.45) !important;
+    }
+    .chatbot-toggle:hover {
+      box-shadow: 0 6px 28px rgba(255,215,0,0.6) !important;
+    }
+    .chatbot-panel {
+      background: #0d1b2a !important;
+      border: 1.5px solid #1e3a52 !important;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6) !important;
+    }
+    .chatbot-header {
+      background: linear-gradient(135deg, #ffd700, #00e5ff) !important;
+      color: #0d1b2a !important;
+    }
+    .chatbot-name, .chatbot-status { color: #0d1b2a !important; }
+    .chatbot-close { color: rgba(13,27,42,0.7) !important; }
+    .chatbot-close:hover { color: #0d1b2a !important; }
+    .chatbot-messages { background: #0d1b2a !important; }
+    .chat-bubble.bot {
+      background: #162032 !important;
+      color: #f0f4f8 !important;
+      border-left: 3px solid #ffd700 !important;
+    }
+    .chat-bubble.user {
+      background: linear-gradient(135deg, #ffd700, #ffab40) !important;
+      color: #0d1b2a !important;
+    }
+    .chat-typing { background: #162032 !important; }
+    .chat-typing span { background: #ffd700 !important; }
+    .chatbot-suggestions { background: #0d1b2a !important; }
+    .suggestion-chip {
+      background: rgba(255,215,0,0.1) !important;
+      border: 1px solid rgba(255,215,0,0.3) !important;
+      color: #ffd700 !important;
+    }
+    .suggestion-chip:hover { background: rgba(255,215,0,0.2) !important; }
+    .chatbot-input-row { background: #0a1520 !important; border-top: 1px solid #1e3a52 !important; }
+    .chatbot-input {
+      background: #1e2f42 !important;
+      border: 1.5px solid #1e3a52 !important;
+      color: #f0f4f8 !important;
+    }
+    .chatbot-input:focus { border-color: #ffd700 !important; }
+    .chatbot-input::placeholder { color: #5a7a96 !important; }
+    .chatbot-send { background: linear-gradient(135deg, #ffd700, #ffab40) !important; color: #0d1b2a !important; }
+    .chatbot-send:hover { background: #e6c200 !important; }
+
+  </style>
+</head>
+<body>
+
+<!-- =====================================================
+     ONBOARDING MODAL
+===================================================== -->
+<div id="onboarding-modal" class="modal-overlay open" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h1 class="modal-title" id="onboarding-title">Welcome to HerDay AI 🌸</h1>
+        <p class="modal-subtitle">Let's personalize your experience in just a moment.</p>
+      </div>
+    </div>
+
+    <form id="onboarding-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="ob-name">Your Name</label>
+        <input class="form-input" type="text" id="ob-name" name="name"
+               placeholder="e.g. Priya" maxlength="50" autocomplete="given-name" required />
+        <span class="form-error" id="ob-name-error">Please enter your name (max 50 characters).</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="ob-user-type">I am a…</label>
+        <select class="form-select" id="ob-user-type" name="userType" required>
+          <option value="" disabled selected>Select your lifestyle</option>
+          <option value="student">Student</option>
+          <option value="professional">Professional</option>
+          <option value="homemaker">Homemaker</option>
+          <option value="other">Other</option>
+        </select>
+        <span class="form-error" id="ob-type-error">Please select your lifestyle.</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="ob-wake">Wake Time</label>
+          <input class="form-input" type="time" id="ob-wake" name="wakeTime" value="06:30" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ob-sleep">Sleep Time</label>
+          <input class="form-input" type="time" id="ob-sleep" name="sleepTime" value="22:30" required />
+        </div>
+      </div>
+      <span class="form-error" id="ob-wake-sleep-error">Wake time must be before sleep time.</span>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="ob-work-start">Work / Study Start</label>
+          <input class="form-input" type="time" id="ob-work-start" name="workStart" value="09:00" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ob-work-end">Work / Study End</label>
+          <input class="form-input" type="time" id="ob-work-end" name="workEnd" value="17:00" required />
+        </div>
+      </div>
+      <span class="form-error" id="ob-work-error">Work start must be before work end.</span>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary btn-lg w-full">Get Started ✨</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- =====================================================
+     SOS MODAL
+===================================================== -->
+<div id="sos-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="sos-title">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="sos-title" style="color: var(--color-danger);">🆘 Emergency SOS</h2>
+        <p class="modal-subtitle">You are safe. Help is available.</p>
+      </div>
+      <button class="modal-close" id="sos-close-btn" aria-label="Close SOS modal">✕</button>
+    </div>
+
+    <div style="background: #fff5f5; border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-5); border-left: 4px solid var(--color-danger);">
+      <p style="font-weight: var(--font-weight-semibold); color: var(--color-danger); margin-bottom: var(--space-2);">If you are in immediate danger, call emergency services (112 / 911).</p>
+      <p style="font-size: var(--font-size-sm); color: var(--text-secondary);">Your safety matters. Reach out to someone you trust.</p>
+    </div>
+
+    <h3 style="font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3); color: var(--text-secondary);">Your Emergency Contacts</h3>
+    <div id="sos-contacts-list" class="flex flex-col gap-3">
+      <!-- Contacts rendered by JS -->
+      <p class="text-muted text-sm text-center" id="sos-no-contacts">No emergency contacts saved yet. Add them in the Safety section.</p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="sos-dismiss-btn">I'm Safe Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     APP SHELL
+===================================================== -->
+<div class="app-shell" id="app-shell">
+
+  <!-- NAV OVERLAY (mobile) -->
+  <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+
+  <!-- SIDEBAR NAV -->
+  <nav class="nav-sidebar" id="nav-sidebar" aria-label="Main navigation">
+    <div class="nav-sidebar-header">
+      <span class="nav-logo">Her<span>Day</span> AI</span>
+      <button class="nav-close-btn" id="nav-close-btn" aria-label="Close navigation">✕</button>
+    </div>
+    <ul class="nav-links" role="list">
+      <li>
+        <button class="nav-link active" data-section="dashboard" aria-current="page">
+          <span class="nav-icon">🏠</span> Dashboard
+        </button>
+      </li>
+      <li>
+        <button class="nav-link" data-section="tasks">
+          <span class="nav-icon">✅</span> Tasks
+        </button>
+      </li>
+      <li>
+        <button class="nav-link" data-section="planner">
+          <span class="nav-icon">📅</span> AI Planner
+        </button>
+      </li>
+      <li>
+        <button class="nav-link" data-section="wellness">
+          <span class="nav-icon">💆</span> Wellness
+        </button>
+      </li>
+      <li>
+        <button class="nav-link" data-section="habits">
+          <span class="nav-icon">🔥</span> Habits
+        </button>
+      </li>
+      <li>
+        <button class="nav-link" data-section="goals">
+          <span class="nav-icon">🎯</span> Goals
+        </button>
+      </li>
+      <li>
+        <button class="nav-link" data-section="safety">
+          <span class="nav-icon">🛡️</span> Safety
+        </button>
+      </li>
+      <li>
+        <button class="nav-link" data-section="analytics">
+          <span class="nav-icon">📊</span> Analytics
+        </button>
+      </li>
+      <li>
+        <button class="nav-link" data-section="settings">
+          <span class="nav-icon">⚙️</span> Settings
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- TOP NAV BAR -->
+  <header class="nav-bar" role="banner">
+    <button class="nav-menu-btn" id="nav-menu-btn" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-sidebar">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="nav-logo">Her<span>Day</span> AI</span>
+    <button class="btn btn-sos btn-sm" id="sos-trigger-btn" aria-label="Activate SOS">🆘 SOS</button>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="main-content" role="main">
+
+    <!-- ===== DASHBOARD SECTION ===== -->
+    <section id="section-dashboard" class="section-panel active" aria-labelledby="dashboard-heading">
+      <div class="dashboard-greeting">
+        <h2 class="greeting-text" id="dashboard-heading">Good morning! 🌸</h2>
+        <p class="greeting-date" id="dashboard-date"></p>
+      </div>
+
+      <div class="stats-grid" id="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-tasks-pending">0</div>
+          <div class="stat-label">Tasks Pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-tasks-done">0</div>
+          <div class="stat-label">Completed Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-habits-streak">0</div>
+          <div class="stat-label">Best Streak 🔥</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-goals-count">0</div>
+          <div class="stat-label">Active Goals</div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <button class="btn btn-primary" data-section="tasks">+ Add Task</button>
+        <button class="btn btn-secondary" data-section="planner">📅 Plan My Day</button>
+        <button class="btn btn-accent" data-section="wellness">💆 Log Wellness</button>
+      </div>
+
+      <div class="content-grid" id="dashboard-cards">
+        <div class="card card-pink">
+          <h3 class="card-title">Today's Top Tasks</h3>
+          <div class="card-body" id="dashboard-top-tasks">
+            <p class="text-muted text-sm">No tasks yet. Add one to get started!</p>
+          </div>
+        </div>
+        <div class="card card-lavender">
+          <h3 class="card-title">Habit Highlights</h3>
+          <div class="card-body" id="dashboard-habits">
+            <p class="text-muted text-sm">No habits tracked yet.</p>
+          </div>
+        </div>
+        <div class="card card-mint">
+          <h3 class="card-title">Wellness Today</h3>
+          <div class="card-body" id="dashboard-wellness">
+            <p class="text-muted text-sm">Log your mood and water intake.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TASKS SECTION ===== -->
+    <section id="section-tasks" class="section-panel" aria-labelledby="tasks-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="tasks-heading">✅ Tasks</h2>
+        <p class="section-subtitle">Manage your to-dos and stay on track.</p>
+      </div>
+
+      <!-- Add Task Form -->
+      <div class="card mb-6">
+        <h3 class="card-title">Add New Task</h3>
+        <form id="task-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="task-title">Task Title</label>
+            <input class="form-input" type="text" id="task-title" name="title"
+                   placeholder="What needs to be done?" maxlength="100" required />
+            <span class="form-error" id="task-title-error">Title is required (max 100 characters).</span>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="task-priority">Priority</label>
+              <select class="form-select" id="task-priority" name="priority">
+                <option value="high">🔴 High</option>
+                <option value="medium" selected>🟡 Medium</option>
+                <option value="low">🟢 Low</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="task-category">Category</label>
+              <select class="form-select" id="task-category" name="category">
+                <option value="work">💼 Work</option>
+                <option value="personal">🏠 Personal</option>
+                <option value="health">💪 Health</option>
+                <option value="other">📌 Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="task-duration">Duration (minutes)</label>
+              <input class="form-input" type="number" id="task-duration" name="duration"
+                     placeholder="e.g. 30" min="5" value="30" required />
+              <span class="form-error" id="task-duration-error">Duration must be at least 5 minutes.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="task-deadline">Deadline (optional)</label>
+              <input class="form-input" type="date" id="task-deadline" name="deadline" />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+      </div>
+
+      <!-- Filters -->
+      <div class="task-filters" role="group" aria-label="Task filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="pending">Pending</button>
+        <button class="filter-btn" data-filter="completed">Completed</button>
+        <button class="filter-btn" data-filter="high">🔴 High</button>
+        <button class="filter-btn" data-filter="medium">🟡 Medium</button>
+        <button class="filter-btn" data-filter="low">🟢 Low</button>
+      </div>
+
+      <!-- Task List -->
+      <div class="task-list" id="task-list" aria-live="polite">
+        <div class="empty-state" id="task-empty-state">
+          <div class="empty-state-icon">📋</div>
+          <p class="empty-state-text">No tasks yet!</p>
+          <p class="empty-state-sub">Add your first task above to get started.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PLANNER SECTION ===== -->
+    <section id="section-planner" class="section-panel" aria-labelledby="planner-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="planner-heading">📅 AI Daily Planner</h2>
+        <p class="section-subtitle">Your personalized time-blocked schedule.</p>
+      </div>
+
+      <div class="planner-header">
+        <span id="planner-date" class="text-secondary font-medium"></span>
+        <button class="btn btn-primary btn-sm" id="generate-plan-btn">✨ Generate Plan</button>
+      </div>
+
+      <div id="planner-content">
+        <div class="empty-state" id="planner-empty-state">
+          <div class="empty-state-icon">🗓️</div>
+          <p class="empty-state-text">No plan generated yet.</p>
+          <p class="empty-state-sub">Add some tasks and click "Generate Plan" to see your day.</p>
+          <button class="btn btn-primary mt-4" data-section="tasks">+ Add Tasks</button>
+        </div>
+        <div class="time-blocks" id="time-blocks-list" aria-live="polite"></div>
+        <div class="planner-explanation hidden" id="planner-explanation"></div>
+      </div>
+    </section>
+
+    <!-- ===== WELLNESS SECTION ===== -->
+    <section id="section-wellness" class="section-panel" aria-labelledby="wellness-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="wellness-heading">💆 Wellness Tracker</h2>
+        <p class="section-subtitle">Track your mood, hydration, sleep, and cycle.</p>
+      </div>
+
+      <div class="content-grid">
+        <!-- Mood -->
+        <div class="card card-pink">
+          <h3 class="card-title">Today's Mood</h3>
+          <div class="mood-picker" id="mood-picker" role="group" aria-label="Select mood">
+            <button class="mood-btn" data-mood="😊" aria-label="Happy">😊</button>
+            <button class="mood-btn" data-mood="😄" aria-label="Excited">😄</button>
+            <button class="mood-btn" data-mood="😌" aria-label="Calm">😌</button>
+            <button class="mood-btn" data-mood="😐" aria-label="Neutral">😐</button>
+            <button class="mood-btn" data-mood="😔" aria-label="Sad">😔</button>
+            <button class="mood-btn" data-mood="😤" aria-label="Stressed">😤</button>
+            <button class="mood-btn" data-mood="😴" aria-label="Tired">😴</button>
+            <button class="mood-btn" data-mood="🤒" aria-label="Unwell">🤒</button>
+          </div>
+          <div class="form-group mt-2">
+            <label class="form-label" for="mood-note">Note (optional)</label>
+            <input class="form-input" type="text" id="mood-note" placeholder="How are you feeling?" maxlength="200" />
+          </div>
+          <button class="btn btn-primary btn-sm" id="log-mood-btn">Log Mood</button>
+        </div>
+
+        <!-- Water -->
+        <div class="card card-mint">
+          <h3 class="card-title">💧 Water Intake</h3>
+          <div class="water-tracker" id="water-tracker" role="group" aria-label="Water glasses">
+            <span class="water-glass" data-glass="1" role="button" tabindex="0" aria-label="1 glass">💧</span>
+            <span class="water-glass" data-glass="2" role="button" tabindex="0" aria-label="2 glasses">💧</span>
+            <span class="water-glass" data-glass="3" role="button" tabindex="0" aria-label="3 glasses">💧</span>
+            <span class="water-glass" data-glass="4" role="button" tabindex="0" aria-label="4 glasses">💧</span>
+            <span class="water-glass" data-glass="5" role="button" tabindex="0" aria-label="5 glasses">💧</span>
+            <span class="water-glass" data-glass="6" role="button" tabindex="0" aria-label="6 glasses">💧</span>
+            <span class="water-glass" data-glass="7" role="button" tabindex="0" aria-label="7 glasses">💧</span>
+            <span class="water-glass" data-glass="8" role="button" tabindex="0" aria-label="8 glasses">💧</span>
+          </div>
+          <p class="text-sm text-muted mt-2" id="water-count-label">0 / 8 glasses today</p>
+          <div class="form-group mt-2">
+            <label class="form-label" for="water-input">Or enter exact count (0–20)</label>
+            <input class="form-input" type="number" id="water-input" min="0" max="20" placeholder="0" />
+            <span class="form-error" id="water-error">Water intake must be between 0 and 20.</span>
+          </div>
+          <button class="btn btn-accent btn-sm" id="log-water-btn">Log Water</button>
+        </div>
+
+        <!-- Sleep -->
+        <div class="card card-lavender">
+          <h3 class="card-title">🌙 Sleep</h3>
+          <div class="form-group">
+            <label class="form-label" for="sleep-input">Hours slept last night (0–24)</label>
+            <input class="form-input" type="number" id="sleep-input" min="0" max="24" step="0.5" placeholder="e.g. 7.5" />
+            <span class="form-error" id="sleep-error">Sleep hours must be between 0 and 24.</span>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="log-sleep-btn">Log Sleep</button>
+        </div>
+
+        <!-- Cycle -->
+        <div class="card card-peach">
+          <h3 class="card-title">🌺 Cycle Tracker</h3>
+          <div class="form-group">
+            <label class="form-label" for="cycle-date">Cycle Start Date</label>
+            <input class="form-input" type="date" id="cycle-date" />
+          </div>
+          <button class="btn btn-ghost btn-sm" id="log-cycle-btn">Log Cycle Start</button>
+          <p class="text-sm text-muted mt-2" id="cycle-info">No cycle data logged yet.</p>
+        </div>
+      </div>
+
+      <!-- Weekly Summary -->
+      <div class="card mt-6">
+        <h3 class="card-title">📈 Weekly Summary</h3>
+        <div class="weekly-summary-grid" id="weekly-summary" aria-label="Weekly wellness summary">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== HABITS SECTION ===== -->
+    <section id="section-habits" class="section-panel" aria-labelledby="habits-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="habits-heading">🔥 Habit Tracker</h2>
+        <p class="section-subtitle">Build consistent routines and track your streaks.</p>
+      </div>
+
+      <!-- Add Habit Form -->
+      <div class="card mb-6">
+        <h3 class="card-title">Add New Habit</h3>
+        <form id="habit-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="habit-name">Habit Name</label>
+              <input class="form-input" type="text" id="habit-name" name="name"
+                     placeholder="e.g. Morning walk" maxlength="60" required />
+              <span class="form-error" id="habit-name-error">Name is required (max 60 characters).</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="habit-frequency">Frequency</label>
+              <select class="form-select" id="habit-frequency" name="frequency">
+                <option value="daily" selected>Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Habit</button>
+        </form>
+      </div>
+
+      <!-- Habit List -->
+      <div id="habit-list" class="flex flex-col gap-3" aria-live="polite">
+        <div class="empty-state" id="habit-empty-state">
+          <div class="empty-state-icon">🌱</div>
+          <p class="empty-state-text">No habits yet!</p>
+          <p class="empty-state-sub">Add your first habit to start building your routine.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== GOALS SECTION ===== -->
+    <section id="section-goals" class="section-panel" aria-labelledby="goals-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="goals-heading">🎯 Goals</h2>
+        <p class="section-subtitle">Set meaningful goals and track your progress.</p>
+      </div>
+
+      <!-- Add Goal Form -->
+      <div class="card mb-6">
+        <h3 class="card-title">Add New Goal</h3>
+        <form id="goal-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="goal-title">Goal Title</label>
+            <input class="form-input" type="text" id="goal-title" name="title"
+                   placeholder="What do you want to achieve?" maxlength="100" required />
+            <span class="form-error" id="goal-title-error">Title is required (max 100 characters).</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="goal-description">Description</label>
+            <textarea class="form-textarea" id="goal-description" name="description"
+                      placeholder="Describe your goal..." rows="2"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="goal-target-date">Target Date</label>
+              <input class="form-input" type="date" id="goal-target-date" name="targetDate" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="goal-progress-init">Initial Progress (%)</label>
+              <input class="form-input" type="number" id="goal-progress-init" name="progress"
+                     min="0" max="100" value="0" />
+              <span class="form-error" id="goal-progress-error">Progress must be between 0 and 100.</span>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Goal</button>
+        </form>
+      </div>
+
+      <!-- Goal List -->
+      <div id="goal-list" class="flex flex-col gap-4" aria-live="polite">
+        <div class="empty-state" id="goal-empty-state">
+          <div class="empty-state-icon">🌟</div>
+          <p class="empty-state-text">No goals yet!</p>
+          <p class="empty-state-sub">Set your first goal and start making progress.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SAFETY SECTION ===== -->
+    <section id="section-safety" class="section-panel" aria-labelledby="safety-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="safety-heading">🛡️ Safety Center</h2>
+        <p class="section-subtitle">Your emergency contacts and SOS tools.</p>
+      </div>
+
+      <!-- SOS Trigger -->
+      <div class="sos-section">
+        <div class="sos-icon">🆘</div>
+        <p class="sos-text">Need immediate help?</p>
+        <p class="sos-sub">Tap SOS to see your emergency contacts instantly.</p>
+        <button class="btn btn-sos" id="safety-sos-btn" aria-label="Activate SOS emergency alert">🆘 Activate SOS</button>
+      </div>
+
+      <!-- Add Contact Form -->
+      <div class="card mb-6">
+        <h3 class="card-title">Add Emergency Contact</h3>
+        <form id="contact-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="contact-name">Name</label>
+              <input class="form-input" type="text" id="contact-name" name="name"
+                     placeholder="Contact name" required />
+              <span class="form-error" id="contact-name-error">Name is required.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contact-relation">Relation</label>
+              <input class="form-input" type="text" id="contact-relation" name="relation"
+                     placeholder="e.g. Mom, Friend" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-phone">Phone Number</label>
+            <input class="form-input" type="tel" id="contact-phone" name="phone"
+                   placeholder="e.g. +91 98765 43210" required />
+            <span class="form-error" id="contact-phone-error">Phone number is required.</span>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Contact</button>
+        </form>
+      </div>
+
+      <!-- Contact List -->
+      <h3 style="font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3); color: var(--text-secondary);">Saved Contacts</h3>
+      <div id="contact-list" class="flex flex-col gap-3" aria-live="polite">
+        <div class="empty-state" id="contact-empty-state">
+          <div class="empty-state-icon">📞</div>
+          <p class="empty-state-text">No contacts saved yet.</p>
+          <p class="empty-state-sub">Add trusted contacts above for quick SOS access.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ANALYTICS SECTION ===== -->
+    <section id="section-analytics" class="section-panel" aria-labelledby="analytics-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="analytics-heading">📊 Analytics</h2>
+        <p class="section-subtitle">Visualize your productivity and wellness patterns.</p>
+      </div>
+
+      <div class="content-grid">
+        <!-- Task Completion Chart -->
+        <div class="card card-pink">
+          <div class="chart-container">
+            <h3 class="chart-title">Task Completion</h3>
+            <div class="bar-chart" id="task-completion-chart" aria-label="Task completion chart">
+              <!-- Rendered by JS -->
+              <p class="text-muted text-sm">No task data yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Habit Streaks Chart -->
+        <div class="card card-lavender">
+          <div class="chart-container">
+            <h3 class="chart-title">Habit Streaks 🔥</h3>
+            <div class="bar-chart" id="habit-streaks-chart" aria-label="Habit streaks chart">
+              <!-- Rendered by JS -->
+              <p class="text-muted text-sm">No habit data yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Wellness Chart -->
+        <div class="card card-mint">
+          <div class="chart-container">
+            <h3 class="chart-title">Weekly Water Intake 💧</h3>
+            <div class="bar-chart" id="water-chart" aria-label="Weekly water intake chart">
+              <!-- Rendered by JS -->
+              <p class="text-muted text-sm">No wellness data yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Goal Progress Chart -->
+        <div class="card card-peach">
+          <div class="chart-container">
+            <h3 class="chart-title">Goal Progress 🎯</h3>
+            <div class="bar-chart" id="goal-progress-chart" aria-label="Goal progress chart">
+              <!-- Rendered by JS -->
+              <p class="text-muted text-sm">No goal data yet.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SETTINGS SECTION ===== -->
+    <section id="section-settings" class="section-panel" aria-labelledby="settings-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="settings-heading">⚙️ Settings</h2>
+        <p class="section-subtitle">Update your profile and schedule preferences.</p>
+      </div>
+
+      <div class="card">
+        <form id="settings-form" novalidate>
+          <h3 class="settings-section-title">Profile</h3>
+
+          <div class="form-group">
+            <label class="form-label" for="settings-name">Your Name</label>
+            <input class="form-input" type="text" id="settings-name" name="name"
+                   maxlength="50" required />
+            <span class="form-error" id="settings-name-error">Name is required (max 50 characters).</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="settings-user-type">Lifestyle</label>
+            <select class="form-select" id="settings-user-type" name="userType">
+              <option value="student">Student</option>
+              <option value="professional">Professional</option>
+              <option value="homemaker">Homemaker</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <h3 class="settings-section-title mt-6">Schedule</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="settings-wake">Wake Time</label>
+              <input class="form-input" type="time" id="settings-wake" name="wakeTime" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="settings-sleep">Sleep Time</label>
+              <input class="form-input" type="time" id="settings-sleep" name="sleepTime" required />
+            </div>
+          </div>
+          <span class="form-error" id="settings-wake-sleep-error">Wake time must be before sleep time.</span>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="settings-work-start">Work / Study Start</label>
+              <input class="form-input" type="time" id="settings-work-start" name="workStart" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="settings-work-end">Work / Study End</label>
+              <input class="form-input" type="time" id="settings-work-end" name="workEnd" required />
+            </div>
+          </div>
+          <span class="form-error" id="settings-work-error">Work start must be before work end.</span>
+
+          <div class="modal-footer" style="border-top: none; padding-top: 0; margin-top: var(--space-4);">
+            <button type="submit" class="btn btn-primary">Save Settings</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="card mt-6" style="border-color: #ffcccc;">
+        <h3 class="card-title" style="color: var(--color-danger);">Danger Zone</h3>
+        <p class="text-sm text-muted mb-4">This will permanently delete all your data and reset the app.</p>
+        <button class="btn btn-danger" id="clear-data-btn">🗑️ Clear All Data</button>
+      </div>
+    </section>
+
+  </main><!-- /main-content -->
+</div><!-- /app-shell -->
+
+<!-- =====================================================
+     TOAST CONTAINER
+===================================================== -->
+<div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+<!-- =====================================================
+     CHATBOT WIDGET
+===================================================== -->
+<button class="chatbot-toggle" id="chatbot-toggle-btn" aria-label="Open AI assistant" aria-expanded="false" aria-controls="chatbot-panel">
+  🤖
+</button>
+
+<div class="chatbot-panel" id="chatbot-panel" role="dialog" aria-modal="false" aria-label="HerDay AI Assistant">
+  <div class="chatbot-header">
+    <div class="chatbot-header-info">
+      <div class="chatbot-avatar">🤖</div>
+      <div>
+        <div class="chatbot-name">HerDay AI</div>
+        <div class="chatbot-status">Always here for you ✨</div>
+      </div>
+    </div>
+    <button class="chatbot-close" id="chatbot-close-btn" aria-label="Close assistant">✕</button>
+  </div>
+
+  <div class="chatbot-messages" id="chatbot-messages" role="log" aria-live="polite">
+    <div class="chat-bubble bot">
+      Hi there! 🌸 I'm your HerDay AI assistant. Ask me about your tasks, habits, wellness, or anything else!
+    </div>
+  </div>
+
+  <div class="chatbot-suggestions" id="chatbot-suggestions">
+    <button class="suggestion-chip">What should I do today?</button>
+    <button class="suggestion-chip">Show my habits</button>
+    <button class="suggestion-chip">How's my wellness?</button>
+    <button class="suggestion-chip">My goals</button>
+  </div>
+
+  <div class="chatbot-input-row">
+    <input class="chatbot-input" type="text" id="chatbot-input"
+           placeholder="Ask me anything…" aria-label="Chat message input" />
+    <button class="chatbot-send" id="chatbot-send-btn" aria-label="Send message">➤</button>
+  </div>
+</div>
+
+<script>
+  // JavaScript will be implemented in subsequent tasks.
+  // Placeholder: prevent any JS errors from missing handlers.
+  console.log('HerDay AI — HTML/CSS scaffold loaded.');
+
+  // =====================================================
+  // UTILITY FUNCTIONS
+  // =====================================================
+
+  /**
+   * generateUUID — returns a UUID v4 string.
+   * Uses crypto.randomUUID() when available; falls back to a
+   * Math.random()-based implementation for older browsers.
+   * Requirements: 14.4, 14.5
+   */
+  function generateUUID() {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    // Manual UUID v4 fallback
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  /**
+   * timeToMinutes — converts a "HH:MM" string to integer minutes since midnight.
+   * Preconditions: timeStr matches "HH:MM", 0 <= HH <= 23, 0 <= MM <= 59
+   * Postconditions:
+   *   - Returns integer in range [0, 1439]
+   *   - timeToMinutes("00:00") === 0
+   *   - timeToMinutes("23:59") === 1439
+   * Requirements: 14.1, 14.2, 14.3
+   */
+  function timeToMinutes(timeStr) {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  /**
+   * State — central read/write layer for localStorage.
+   * All modules use this exclusively; no direct localStorage calls elsewhere.
+   *
+   * Requirements: 2.1, 2.2, 2.3, 2.4
+   */
+  const State = {
+    /** Deserialize and return the stored value, or null if missing/corrupt. */
+    get(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw === null) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    },
+
+    /** Serialize and persist value under key. */
+    set(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+
+    /** Remove the entry for key. */
+    remove(key) {
+      localStorage.removeItem(key);
+    },
+
+    /** Clear all localStorage entries. */
+    clear() {
+      localStorage.clear();
+    }
+  };
+
+  /**
+   * validateProfile(data) — validates onboarding/settings profile data.
+   *
+   * Rules:
+   *   - name must be non-empty and ≤ 50 characters (Req 1.5)
+   *   - wakeTime must be before sleepTime (Req 1.6)
+   *   - workStart must be before workEnd (Req 1.7)
+   *
+   * Returns { valid: boolean, errors: { name?, wakeSleep?, workTime? } }
+   *
+   * Requirements: 1.3, 1.5, 1.6, 1.7
+   */
+  function validateProfile(data) {
+    const errors = {};
+
+    // Req 1.5: name non-empty and ≤ 50 chars
+    const name = (data.name || '').trim();
+    if (name.length === 0 || name.length > 50) {
+      errors.name = name.length === 0
+        ? 'Name is required.'
+        : 'Name must be 50 characters or fewer.';
+    }
+
+    // Req 1.6: wakeTime must be before sleepTime
+    if (timeToMinutes(data.wakeTime) >= timeToMinutes(data.sleepTime)) {
+      errors.wakeSleep = 'Wake time must be before sleep time.';
+    }
+
+    // Req 1.7: workStart must be before workEnd
+    if (timeToMinutes(data.workStart) >= timeToMinutes(data.workEnd)) {
+      errors.workTime = 'Work start time must be before work end time.';
+    }
+
+    return { valid: Object.keys(errors).length === 0, errors };
+  }
+
+  /**
+   * validateTaskForm(data) — validates task form data.
+   *
+   * Rules:
+   *   - title must be non-empty and ≤ 100 characters (Req 3.2)
+   *   - duration must be a number ≥ 5 minutes (Req 3.3)
+   *
+   * Returns { valid: boolean, errors: { title?, duration? } }
+   *
+   * Requirements: 3.2, 3.3
+   */
+  function validateTaskForm(data) {
+    const errors = {};
+
+    // Req 3.2: title non-empty and ≤ 100 chars
+    const title = (data.title || '').trim();
+    if (title.length === 0) {
+      errors.title = 'Title is required.';
+    } else if (title.length > 100) {
+      errors.title = 'Title must be 100 characters or fewer.';
+    }
+
+    // Req 3.3: duration must be a number ≥ 5
+    const duration = Number(data.duration);
+    if (isNaN(duration) || duration < 5) {
+      errors.duration = 'Duration must be at least 5 minutes.';
+    }
+
+    return { valid: Object.keys(errors).length === 0, errors };
+  }
+
+  /**
+   * showOnboarding() — displays the onboarding modal.
+   * Requirements: 1.1
+   */
+  function showOnboarding() {
+    document.getElementById('onboarding-modal').classList.add('open');
+  }
+
+  /**
+   * hideOnboarding() — hides the onboarding modal.
+   * Requirements: 1.4
+   */
+  function hideOnboarding() {
+    document.getElementById('onboarding-modal').classList.remove('open');
+  }
+
+  /**
+   * seedSampleData() — seeds sample tasks, habits, and goals into State
+   * so the dashboard isn't empty on first load.
+   * Requirements: 1.4
+   */
+  function seedSampleData() {
+    const tasks = [
+      {
+        id: generateUUID(),
+        title: 'Morning workout',
+        priority: 'high',
+        deadline: '',
+        duration: 30,
+        category: 'health',
+        completed: false,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: generateUUID(),
+        title: 'Read for 20 minutes',
+        priority: 'medium',
+        deadline: '',
+        duration: 20,
+        category: 'personal',
+        completed: false,
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    const habits = [
+      {
+        id: generateUUID(),
+        name: 'Drink 8 glasses of water',
+        frequency: 'daily',
+        completedDates: [],
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    const goals = [
+      {
+        id: generateUUID(),
+        title: 'Read 12 books this year',
+        description: 'Build a consistent reading habit throughout the year.',
+        targetDate: new Date(new Date().getFullYear(), 11, 31).toISOString(),
+        progress: 10,
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    State.set('herday_tasks', tasks);
+    State.set('herday_habits', habits);
+    State.set('herday_goals', goals);
+  }
+
+  // Onboarding form submit handler
+  // Requirements: 1.1, 1.3, 1.4, 1.5, 1.6, 1.7
+  document.getElementById('onboarding-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const data = {
+      name:      document.getElementById('ob-name').value,
+      userType:  document.getElementById('ob-user-type').value,
+      wakeTime:  document.getElementById('ob-wake').value,
+      sleepTime: document.getElementById('ob-sleep').value,
+      workStart: document.getElementById('ob-work-start').value,
+      workEnd:   document.getElementById('ob-work-end').value
+    };
+
+    const result = validateProfile(data);
+
+    // Clear all inline errors first
+    document.getElementById('ob-name-error').classList.remove('visible');
+    document.getElementById('ob-wake-sleep-error').classList.remove('visible');
+    document.getElementById('ob-work-error').classList.remove('visible');
+
+    if (!result.valid) {
+      if (result.errors.name)      document.getElementById('ob-name-error').classList.add('visible');
+      if (result.errors.wakeSleep) document.getElementById('ob-wake-sleep-error').classList.add('visible');
+      if (result.errors.workTime)  document.getElementById('ob-work-error').classList.add('visible');
+      return;
+    }
+
+    // Build and persist profile
+    const profile = {
+      name:      data.name.trim(),
+      userType:  data.userType,
+      wakeTime:  data.wakeTime,
+      sleepTime: data.sleepTime,
+      workStart: data.workStart,
+      workEnd:   data.workEnd,
+      createdAt: new Date().toISOString()
+    };
+
+    State.set('herday_profile', profile);
+    seedSampleData();
+    hideOnboarding();
+    initApp(profile);  // implemented in task 3.3
+  });
+
+  // =====================================================
+  // TASK MODULE — CRUD, filter, sort
+  // Requirements: 3.1, 3.4, 3.5, 3.6, 3.7, 3.8
+  // =====================================================
+  const TaskModule = (function () {
+    const STORAGE_KEY = 'herday_tasks';
+
+    // Priority sort weight: high=0, medium=1, low=2
+    const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
+
+    function _load() {
+      return State.get(STORAGE_KEY) || [];
+    }
+
+    function _save(tasks) {
+      State.set(STORAGE_KEY, tasks);
+    }
+
+    /**
+     * addTask(data) — validates, creates, persists, and returns a new Task.
+     * Requirements: 3.1, 3.2, 3.3
+     */
+    function addTask(data) {
+      const result = validateTaskForm(data);
+      if (!result.valid) {
+        throw new Error(Object.values(result.errors).join(' '));
+      }
+
+      const task = {
+        id:        generateUUID(),
+        title:     data.title.trim(),
+        priority:  data.priority  || 'medium',
+        deadline:  data.deadline  || '',
+        duration:  Number(data.duration),
+        category:  data.category  || 'other',
+        completed: false,
+        createdAt: new Date().toISOString()
+      };
+
+      const tasks = _load();
+      tasks.push(task);
+      _save(tasks);
+      return task;
+    }
+
+    /**
+     * editTask(id, data) — validates, merges, persists, and returns the updated Task.
+     * Requirements: 3.4
+     */
+    function editTask(id, data) {
+      const result = validateTaskForm(data);
+      if (!result.valid) {
+        throw new Error(Object.values(result.errors).join(' '));
+      }
+
+      const tasks = _load();
+      const idx = tasks.findIndex(function (t) { return t.id === id; });
+      if (idx === -1) {
+        throw new Error('Task not found: ' + id);
+      }
+
+      const updated = Object.assign({}, tasks[idx], {
+        title:    data.title    !== undefined ? data.title.trim()    : tasks[idx].title,
+        priority: data.priority !== undefined ? data.priority        : tasks[idx].priority,
+        deadline: data.deadline !== undefined ? data.deadline        : tasks[idx].deadline,
+        duration: data.duration !== undefined ? Number(data.duration): tasks[idx].duration,
+        category: data.category !== undefined ? data.category        : tasks[idx].category
+      });
+
+      tasks[idx] = updated;
+      _save(tasks);
+      return updated;
+    }
+
+    /**
+     * deleteTask(id) — removes task by id and persists.
+     * Requirements: 3.5
+     */
+    function deleteTask(id) {
+      const tasks = _load().filter(function (t) { return t.id !== id; });
+      _save(tasks);
+    }
+
+    /**
+     * toggleComplete(id) — flips the completed flag and persists.
+     * Requirements: 3.6
+     */
+    function toggleComplete(id) {
+      const tasks = _load();
+      const idx = tasks.findIndex(function (t) { return t.id === id; });
+      if (idx === -1) return;
+      tasks[idx] = Object.assign({}, tasks[idx], { completed: !tasks[idx].completed });
+      _save(tasks);
+    }
+
+    /**
+     * getTasks(filter) — loads, filters, and sorts tasks.
+     * filter: { completed?, priority?, category?, deadline? }
+     * Sort: priority asc (high first), then deadline asc (empty last).
+     * Requirements: 3.7, 3.8
+     */
+    function getTasks(filter) {
+      var tasks = _load();
+
+      if (filter) {
+        if (filter.completed !== undefined) {
+          tasks = tasks.filter(function (t) { return t.completed === filter.completed; });
+        }
+        if (filter.priority !== undefined) {
+          tasks = tasks.filter(function (t) { return t.priority === filter.priority; });
+        }
+        if (filter.category !== undefined) {
+          tasks = tasks.filter(function (t) { return t.category === filter.category; });
+        }
+        if (filter.deadline !== undefined) {
+          tasks = tasks.filter(function (t) { return t.deadline === filter.deadline; });
+        }
+      }
+
+      // Sort by priority (high=0, medium=1, low=2) then deadline asc (empty last)
+      tasks.sort(function (a, b) {
+        var pa = PRIORITY_ORDER[a.priority] !== undefined ? PRIORITY_ORDER[a.priority] : 99;
+        var pb = PRIORITY_ORDER[b.priority] !== undefined ? PRIORITY_ORDER[b.priority] : 99;
+        if (pa !== pb) return pa - pb;
+
+        // Both have deadlines: sort ascending
+        if (a.deadline && b.deadline) return a.deadline < b.deadline ? -1 : a.deadline > b.deadline ? 1 : 0;
+        // Empty deadlines go last
+        if (a.deadline && !b.deadline) return -1;
+        if (!a.deadline && b.deadline) return 1;
+        return 0;
+      });
+
+      return tasks;
+    }
+
+    /**
+     * renderTaskList(filter) — renders task cards into #task-list.
+     * Uses DOM methods (textContent) for user-provided content.
+     * Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 11.4
+     */
+    function renderTaskList(filter) {
+      const list = document.getElementById('task-list');
+      const emptyState = document.getElementById('task-empty-state');
+      if (!list) return;
+
+      const tasks = getTasks(filter);
+
+      // Clear existing task cards (keep empty-state element)
+      Array.from(list.children).forEach(function (child) {
+        if (child !== emptyState) list.removeChild(child);
+      });
+
+      if (tasks.length === 0) {
+        if (emptyState) emptyState.style.display = '';
+        return;
+      }
+
+      if (emptyState) emptyState.style.display = 'none';
+
+      const PRIORITY_LABELS = { high: '🔴 High', medium: '🟡 Medium', low: '🟢 Low' };
+      const CATEGORY_LABELS = { work: '💼 Work', personal: '🏠 Personal', health: '💪 Health', other: '📌 Other' };
+
+      tasks.forEach(function (task) {
+        // --- Card container ---
+        const card = document.createElement('div');
+        card.className = 'task-card' + (task.completed ? ' completed' : '');
+        card.dataset.taskId = task.id;
+
+        // --- Checkbox ---
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'task-checkbox';
+        checkbox.checked = task.completed;
+        checkbox.setAttribute('aria-label', 'Mark task complete');
+        checkbox.addEventListener('change', function () {
+          toggleComplete(task.id);
+          renderTaskList(filter);
+        });
+        card.appendChild(checkbox);
+
+        // --- Task info ---
+        const info = document.createElement('div');
+        info.className = 'task-info';
+
+        // Title span (user content via textContent)
+        const titleSpan = document.createElement('div');
+        titleSpan.className = 'task-title';
+        titleSpan.textContent = task.title;
+        info.appendChild(titleSpan);
+
+        // Meta row: priority badge, category badge, deadline, duration
+        const meta = document.createElement('div');
+        meta.className = 'task-meta';
+
+        const priorityBadge = document.createElement('span');
+        priorityBadge.className = 'badge badge-' + task.priority;
+        priorityBadge.textContent = PRIORITY_LABELS[task.priority] || task.priority;
+        meta.appendChild(priorityBadge);
+
+        const categoryBadge = document.createElement('span');
+        categoryBadge.className = 'badge badge-lavender';
+        categoryBadge.textContent = CATEGORY_LABELS[task.category] || task.category;
+        meta.appendChild(categoryBadge);
+
+        if (task.deadline) {
+          const deadlineSpan = document.createElement('span');
+          deadlineSpan.className = 'text-xs text-muted';
+          deadlineSpan.textContent = '📅 ' + task.deadline;
+          meta.appendChild(deadlineSpan);
+        }
+
+        const durationSpan = document.createElement('span');
+        durationSpan.className = 'text-xs text-muted';
+        durationSpan.textContent = '⏱ ' + task.duration + ' min';
+        meta.appendChild(durationSpan);
+
+        info.appendChild(meta);
+        card.appendChild(info);
+
+        // --- Actions ---
+        const actions = document.createElement('div');
+        actions.className = 'task-actions';
+
+        // Edit button
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn btn-ghost btn-sm btn-icon';
+        editBtn.setAttribute('aria-label', 'Edit task');
+        editBtn.textContent = '✏️';
+        editBtn.addEventListener('click', function () {
+          _startInlineEdit(card, task, titleSpan, filter);
+        });
+        actions.appendChild(editBtn);
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-danger btn-sm btn-icon';
+        deleteBtn.setAttribute('aria-label', 'Delete task');
+        deleteBtn.textContent = '🗑️';
+        deleteBtn.addEventListener('click', function () {
+          deleteTask(task.id);
+          renderTaskList(filter);
+        });
+        actions.appendChild(deleteBtn);
+
+        card.appendChild(actions);
+        list.appendChild(card);
+      });
+    }
+
+    /**
+     * _startInlineEdit — replaces the title span with an input + save/cancel buttons.
+     * Uses textContent for user-provided content (Req 11.4).
+     */
+    function _startInlineEdit(card, task, titleSpan, filter) {
+      // Prevent double-editing
+      if (card.querySelector('.task-edit-input')) return;
+
+      const editInput = document.createElement('input');
+      editInput.type = 'text';
+      editInput.className = 'form-input task-edit-input';
+      editInput.value = task.title;
+      editInput.maxLength = 100;
+      editInput.setAttribute('aria-label', 'Edit task title');
+
+      const errorSpan = document.createElement('span');
+      errorSpan.className = 'form-error';
+      errorSpan.style.display = 'none';
+
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'btn btn-primary btn-sm';
+      saveBtn.textContent = 'Save';
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'btn btn-ghost btn-sm';
+      cancelBtn.textContent = 'Cancel';
+
+      const btnRow = document.createElement('div');
+      btnRow.className = 'flex gap-2 mt-2';
+      btnRow.appendChild(saveBtn);
+      btnRow.appendChild(cancelBtn);
+
+      const info = titleSpan.parentNode;
+      info.replaceChild(editInput, titleSpan);
+      info.insertBefore(errorSpan, info.querySelector('.task-meta'));
+      info.insertBefore(btnRow, info.querySelector('.task-meta'));
+
+      editInput.focus();
+
+      saveBtn.addEventListener('click', function () {
+        const newTitle = editInput.value;
+        try {
+          editTask(task.id, {
+            title:    newTitle,
+            priority: task.priority,
+            deadline: task.deadline,
+            duration: task.duration,
+            category: task.category
+          });
+          renderTaskList(filter);
+        } catch (err) {
+          errorSpan.textContent = err.message;
+          errorSpan.style.display = 'block';
+        }
+      });
+
+      cancelBtn.addEventListener('click', function () {
+        renderTaskList(filter);
+      });
+    }
+
+    return { addTask: addTask, editTask: editTask, deleteTask: deleteTask, toggleComplete: toggleComplete, getTasks: getTasks, renderTaskList: renderTaskList };
+  }());
+
+  // =====================================================
+  // ROUTER — Section Switcher
+  // Requirements: 12.1, 12.2, 12.3
+  // =====================================================
+  const Router = (function () {
+    const _sections = {};
+    let _current = '';
+
+    function registerSection(id, renderFn) {
+      _sections[id] = renderFn;
+    }
+
+    function navigate(sectionId) {
+      // Hide all section panels
+      document.querySelectorAll('.section-panel').forEach(function (panel) {
+        panel.classList.remove('active');
+      });
+
+      // Show the target panel
+      const target = document.getElementById('section-' + sectionId);
+      if (target) {
+        target.classList.add('active');
+      }
+
+      // Update nav active state
+      document.querySelectorAll('.nav-link').forEach(function (link) {
+        link.classList.remove('active');
+        link.removeAttribute('aria-current');
+      });
+      const activeLink = document.querySelector('.nav-link[data-section="' + sectionId + '"]');
+      if (activeLink) {
+        activeLink.classList.add('active');
+        activeLink.setAttribute('aria-current', 'page');
+      }
+
+      // Call registered render function if it exists
+      if (typeof _sections[sectionId] === 'function') {
+        _sections[sectionId]();
+      }
+
+      _current = sectionId;
+    }
+
+    function getCurrentSection() {
+      return _current;
+    }
+
+    return { registerSection, navigate, getCurrentSection };
+  })();
+
+  // =====================================================
+  // NAV WIRING — link nav buttons and mobile sidebar
+  // Requirements: 12.1, 12.2
+  // =====================================================
+  (function wireNav() {
+    // Wire all nav-link buttons
+    document.querySelectorAll('.nav-link[data-section]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        Router.navigate(btn.dataset.section);
+        // Close mobile sidebar
+        document.getElementById('nav-sidebar').classList.remove('open');
+        document.getElementById('nav-overlay').classList.remove('open');
+      });
+    });
+
+    // Wire quick-action buttons in dashboard that have data-section
+    document.querySelectorAll('.quick-actions [data-section]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        Router.navigate(btn.dataset.section);
+      });
+    });
+
+    // Wire planner empty-state "Add Tasks" button
+    document.querySelectorAll('.section-panel [data-section]').forEach(function (btn) {
+      if (!btn.classList.contains('nav-link') && !btn.closest('.quick-actions')) {
+        btn.addEventListener('click', function () {
+          Router.navigate(btn.dataset.section);
+        });
+      }
+    });
+
+    // Mobile nav: hamburger opens sidebar
+    const menuBtn = document.getElementById('nav-menu-btn');
+    const sidebar = document.getElementById('nav-sidebar');
+    const overlay = document.getElementById('nav-overlay');
+    const closeBtn = document.getElementById('nav-close-btn');
+
+    if (menuBtn) {
+      menuBtn.addEventListener('click', function () {
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+        menuBtn.setAttribute('aria-expanded', 'true');
+      });
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+      if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+    if (overlay) overlay.addEventListener('click', closeSidebar);
+  })();
+
+  // =====================================================
+  // TASK FORM — submit handler
+  // Requirements: 3.1, 3.2, 3.3, 11.4
+  // =====================================================
+  (function wireTaskForm() {
+    const form = document.getElementById('task-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Clear previous errors
+      document.getElementById('task-title-error').classList.remove('visible');
+      document.getElementById('task-duration-error').classList.remove('visible');
+
+      const data = {
+        title:    document.getElementById('task-title').value,
+        priority: document.getElementById('task-priority').value,
+        category: document.getElementById('task-category').value,
+        duration: document.getElementById('task-duration').value,
+        deadline: document.getElementById('task-deadline').value
+      };
+
+      try {
+        TaskModule.addTask(data);
+        form.reset();
+        // Restore default duration value after reset
+        document.getElementById('task-duration').value = '30';
+        TaskModule.renderTaskList();
+        // Update dashboard stats after adding a task (Req 3.1, 10.1)
+        renderDashboard(State.get('herday_profile'));
+      } catch (err) {
+        // Show inline validation errors based on message content
+        const msg = err.message || '';
+        if (msg.toLowerCase().includes('title')) {
+          document.getElementById('task-title-error').classList.add('visible');
+        }
+        if (msg.toLowerCase().includes('duration')) {
+          document.getElementById('task-duration-error').classList.add('visible');
+        }
+      }
+    });
+  })();
+
+  // =====================================================
+  // FILTER BUTTONS — wire .filter-btn clicks
+  // Requirements: 3.7
+  // =====================================================
+  (function wireFilterButtons() {
+    let activeFilter = undefined;
+
+    document.querySelectorAll('.filter-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        // Update active state
+        document.querySelectorAll('.filter-btn').forEach(function (b) {
+          b.classList.remove('active');
+        });
+        btn.classList.add('active');
+
+        const value = btn.dataset.filter;
+        if (value === 'all') {
+          activeFilter = undefined;
+        } else if (value === 'pending') {
+          activeFilter = { completed: false };
+        } else if (value === 'completed') {
+          activeFilter = { completed: true };
+        } else if (value === 'high' || value === 'medium' || value === 'low') {
+          activeFilter = { priority: value };
+        }
+
+        TaskModule.renderTaskList(activeFilter);
+      });
+    });
+  })();
+
+  /**
+   * PlannerModule — Simulated AI daily planner.
+   * Generates a time-blocked DayPlan from tasks and a user profile.
+   * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.7
+   */
+  const PlannerModule = (function () {
+
+    /**
+     * minutesToTime(minutes) — converts integer minutes since midnight to "HH:MM".
+     * @param {number} minutes
+     * @returns {string}
+     */
+    function minutesToTime(minutes) {
+      const h = Math.floor(minutes / 60);
+      const m = minutes % 60;
+      return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+    }
+
+    /**
+     * generatePlan(tasks, profile) — builds a non-overlapping time-blocked DayPlan.
+     * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.7
+     * @param {Task[]} tasks
+     * @param {UserProfile} profile
+     * @returns {DayPlan}
+     */
+    function generatePlan(tasks, profile) {
+      const today = new Date().toISOString().slice(0, 10);
+      const wakeMinutes  = timeToMinutes(profile.wakeTime);
+      const sleepMinutes = timeToMinutes(profile.sleepTime);
+
+      // 4.1 — filter completed tasks
+      const pending = tasks.filter(function (t) { return !t.completed; });
+
+      // 4.2 — sort by priority DESC then deadline ASC
+      const priorityWeight = { high: 0, medium: 1, low: 2 };
+      const sorted = pending.slice().sort(function (a, b) {
+        const pa = priorityWeight[a.priority] !== undefined ? priorityWeight[a.priority] : 1;
+        const pb = priorityWeight[b.priority] !== undefined ? priorityWeight[b.priority] : 1;
+        if (pa !== pb) return pa - pb;
+        // deadline ASC — empty deadline sorts last
+        const da = a.deadline || '9999-12-31';
+        const db = b.deadline || '9999-12-31';
+        if (da < db) return -1;
+        if (da > db) return  1;
+        return 0;
+      });
+
+      const blocks = [];
+      let cursor = wakeMinutes + 30; // 30-min morning routine
+
+      // 4.7 — morning routine block
+      blocks.push({
+        startTime: minutesToTime(wakeMinutes),
+        endTime:   minutesToTime(cursor),
+        type:      'self-care',
+        label:     'Morning Routine'
+      });
+
+      let workMinutesSinceLastBreak = 0;
+      let lunchAdded = false;
+
+      for (let i = 0; i < sorted.length; i++) {
+        const task = sorted[i];
+
+        // 4.4 — stop if cursor has reached or passed sleep time
+        if (cursor >= sleepMinutes) break;
+
+        // Insert lunch break if crossing noon (720 min) — only once
+        if (!lunchAdded && cursor < 720 && cursor + task.duration > 720) {
+          blocks.push({
+            startTime: minutesToTime(720),
+            endTime:   minutesToTime(780),
+            type:      'meal',
+            label:     'Lunch Break'
+          });
+          cursor = 780;
+          workMinutesSinceLastBreak = 0;
+          lunchAdded = true;
+        }
+
+        // 4.5 — insert short break after 90 min of accumulated work
+        if (workMinutesSinceLastBreak >= 90) {
+          const breakEnd = cursor + 15;
+          blocks.push({
+            startTime: minutesToTime(cursor),
+            endTime:   minutesToTime(breakEnd),
+            type:      'break',
+            label:     'Short Break'
+          });
+          cursor = breakEnd;
+          workMinutesSinceLastBreak = 0;
+        }
+
+        // 4.4 — only add task block if it fits before sleep time
+        const taskEnd = cursor + task.duration;
+        if (taskEnd <= sleepMinutes) {
+          blocks.push({
+            startTime: minutesToTime(cursor),
+            endTime:   minutesToTime(taskEnd),
+            type:      'task',
+            label:     task.title,
+            taskId:    task.id
+          });
+          cursor = taskEnd;
+          workMinutesSinceLastBreak += task.duration;
+        }
+      }
+
+      // 4.7 — evening wind-down block
+      if (cursor < sleepMinutes - 30) {
+        blocks.push({
+          startTime: minutesToTime(sleepMinutes - 30),
+          endTime:   minutesToTime(sleepMinutes),
+          type:      'self-care',
+          label:     'Wind Down'
+        });
+      }
+
+      const plan = {
+        date:        today,
+        blocks:      blocks,
+        explanation: ''
+      };
+      // 4.8 — populate explanation
+      plan.explanation = explainPlan(plan);
+      return plan;
+    }
+
+    /**
+     * explainPlan(plan) — returns a human-readable summary of the generated plan.
+     * Requirements: 4.8
+     * @param {DayPlan} plan
+     * @returns {string}
+     */
+    function explainPlan(plan) {
+      if (!plan || !plan.blocks || plan.blocks.length === 0) {
+        return 'No plan generated yet.';
+      }
+      var taskCount     = 0;
+      var breakCount    = 0;
+      var selfCareCount = 0;
+      var totalMinutes  = 0;
+
+      for (var i = 0; i < plan.blocks.length; i++) {
+        var b = plan.blocks[i];
+        var start = timeToMinutes(b.startTime);
+        var end   = timeToMinutes(b.endTime);
+        var dur   = end - start;
+        totalMinutes += dur;
+        if (b.type === 'task')      taskCount++;
+        else if (b.type === 'break' || b.type === 'meal') breakCount++;
+        else if (b.type === 'self-care') selfCareCount++;
+      }
+
+      var hours   = Math.floor(totalMinutes / 60);
+      var minutes = totalMinutes % 60;
+      var timeStr = hours > 0
+        ? hours + ' hour' + (hours !== 1 ? 's' : '') + (minutes > 0 ? ' ' + minutes + ' minute' + (minutes !== 1 ? 's' : '') : '')
+        : minutes + ' minute' + (minutes !== 1 ? 's' : '');
+
+      return 'Your plan for today includes ' + taskCount + ' task' + (taskCount !== 1 ? 's' : '') +
+        ', ' + breakCount + ' break' + (breakCount !== 1 ? 's' : '') +
+        ', and ' + selfCareCount + ' self-care block' + (selfCareCount !== 1 ? 's' : '') +
+        '. Total scheduled time: ' + timeStr + '.';
+    }
+
+    /**
+     * renderPlan(plan) — renders time blocks as a visual schedule.
+     * Requirements: 4.6, 4.8
+     * @param {DayPlan|null} plan
+     */
+    function renderPlan(plan) {
+      var emptyState   = document.getElementById('planner-empty-state');
+      var blocksList   = document.getElementById('time-blocks-list');
+      var explanation  = document.getElementById('planner-explanation');
+
+      // Count task blocks
+      var taskBlockCount = plan && plan.blocks
+        ? plan.blocks.filter(function (b) { return b.type === 'task'; }).length
+        : 0;
+
+      if (!plan || taskBlockCount === 0) {
+        // 4.6 — empty state
+        emptyState.classList.remove('hidden');
+        blocksList.classList.add('hidden');
+        explanation.classList.add('hidden');
+        return;
+      }
+
+      // Hide empty state, show list
+      emptyState.classList.add('hidden');
+      blocksList.classList.remove('hidden');
+
+      // Clear previous blocks
+      blocksList.innerHTML = '';
+
+      // Render each block
+      for (var i = 0; i < plan.blocks.length; i++) {
+        var block = plan.blocks[i];
+
+        var blockEl = document.createElement('div');
+        blockEl.className = 'time-block';
+
+        var timeSpan = document.createElement('span');
+        timeSpan.className = 'time-block-time';
+        timeSpan.textContent = block.startTime + ' \u2013 ' + block.endTime; // Req 11.4
+
+        var cardDiv = document.createElement('div');
+        cardDiv.className = 'time-block-card ' + block.type;
+        cardDiv.textContent = block.label; // Req 11.4 — textContent for user content
+
+        blockEl.appendChild(timeSpan);
+        blockEl.appendChild(cardDiv);
+        blocksList.appendChild(blockEl);
+      }
+
+      // 4.8 — show explanation
+      explanation.classList.remove('hidden');
+      explanation.textContent = plan.explanation || explainPlan(plan); // Req 11.4
+    }
+
+    return {
+      generatePlan:  generatePlan,
+      explainPlan:   explainPlan,
+      renderPlan:    renderPlan,
+      minutesToTime: minutesToTime
+    };
+  })();
+
+  // Register tasks section with Router
+  Router.registerSection('tasks', function () { TaskModule.renderTaskList(); });
+
+  // =====================================================
+  // PLANNER UI WIRING
+  // Requirements: 4.6, 4.8
+  // =====================================================
+
+  // Set today's date in the planner header
+  (function () {
+    var plannerDate = document.getElementById('planner-date');
+    if (plannerDate) {
+      plannerDate.textContent = new Date().toLocaleDateString(undefined, {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+    }
+  })();
+
+  // Wire Generate Plan button
+  document.getElementById('generate-plan-btn').addEventListener('click', function () {
+    var profile = State.get('herday_profile');
+    if (!profile) return;
+    var tasks = TaskModule.getTasks();
+    var plan  = PlannerModule.generatePlan(tasks, profile);
+    PlannerModule.renderPlan(plan);
+  });
+
+  // =====================================================
+  // WELLNESS MODULE
+  // Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7
+  // =====================================================
+  var WellnessModule = (function () {
+    var STORAGE_KEY = 'herday_wellness';
+    var _selectedMood = '';
+
+    function _getToday() {
+      var d = new Date();
+      var mm = String(d.getMonth() + 1).padStart(2, '0');
+      var dd = String(d.getDate()).padStart(2, '0');
+      return d.getFullYear() + '-' + mm + '-' + dd;
+    }
+
+    function _loadAll() {
+      return State.get(STORAGE_KEY) || [];
+    }
+
+    function _getTodayEntry() {
+      var today = _getToday();
+      var all = _loadAll();
+      return all.find(function (e) { return e.date === today; }) || {
+        date: today,
+        mood: '',
+        moodNote: '',
+        waterGlasses: 0,
+        sleepHours: 0,
+        cycleStart: ''
+      };
+    }
+
+    function _saveEntry(entry) {
+      var all = _loadAll();
+      var idx = all.findIndex(function (e) { return e.date === entry.date; });
+      if (idx >= 0) {
+        all[idx] = entry;
+      } else {
+        all.push(entry);
+      }
+      State.set(STORAGE_KEY, all);
+    }
+
+    // Req 5.1
+    function logMood(emoji, note) {
+      var entry = _getTodayEntry();
+      entry.mood = emoji;
+      entry.moodNote = note || '';
+      _saveEntry(entry);
+    }
+
+    // Req 5.2, 5.3
+    function logWater(glasses) {
+      if (glasses < 0 || glasses > 20) {
+        throw new Error('Water intake must be between 0 and 20.');
+      }
+      var entry = _getTodayEntry();
+      entry.waterGlasses = glasses;
+      _saveEntry(entry);
+    }
+
+    // Req 5.4, 5.5
+    function logSleep(hours) {
+      if (hours < 0 || hours > 24) {
+        throw new Error('Sleep hours must be between 0 and 24.');
+      }
+      var entry = _getTodayEntry();
+      entry.sleepHours = hours;
+      _saveEntry(entry);
+    }
+
+    // Req 5.6
+    function logCycle(startDate) {
+      var entry = _getTodayEntry();
+      entry.cycleStart = startDate;
+      _saveEntry(entry);
+    }
+
+    // Req 5.7
+    function getWeeklySummary() {
+      var all = _loadAll();
+      var result = [];
+      for (var i = 0; i < 7; i++) {
+        var d = new Date();
+        d.setDate(d.getDate() - i);
+        var mm = String(d.getMonth() + 1).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        var dateStr = d.getFullYear() + '-' + mm + '-' + dd;
+        var found = all.find(function (e) { return e.date === dateStr; });
+        result.push(found ? {
+          date: found.date,
+          mood: found.mood,
+          waterGlasses: found.waterGlasses,
+          sleepHours: found.sleepHours
+        } : {
+          date: dateStr,
+          mood: '',
+          waterGlasses: 0,
+          sleepHours: 0
+        });
+      }
+      return result;
+    }
+
+    // Req 5.1–5.7
+    function renderWellness() {
+      var today = _getTodayEntry();
+
+      // Pre-fill mood picker
+      var moodBtns = document.querySelectorAll('#mood-picker .mood-btn');
+      moodBtns.forEach(function (btn) {
+        btn.classList.remove('selected');
+        if (today.mood && btn.getAttribute('data-mood') === today.mood) {
+          btn.classList.add('selected');
+          _selectedMood = today.mood;
+        }
+      });
+
+      // Wire mood picker buttons
+      moodBtns.forEach(function (btn) {
+        btn.onclick = function () {
+          moodBtns.forEach(function (b) { b.classList.remove('selected'); });
+          btn.classList.add('selected');
+          _selectedMood = btn.getAttribute('data-mood');
+        };
+      });
+
+      // Update water count label
+      var waterLabel = document.getElementById('water-count-label');
+      if (waterLabel) {
+        waterLabel.textContent = today.waterGlasses + ' / 8 glasses today';
+      }
+
+      // Wire water glass clicks
+      var waterGlasses = document.querySelectorAll('#water-tracker .water-glass');
+      waterGlasses.forEach(function (glass) {
+        glass.onclick = function () {
+          var count = parseInt(glass.getAttribute('data-glass'), 10);
+          try {
+            logWater(count);
+            var lbl = document.getElementById('water-count-label');
+            if (lbl) lbl.textContent = count + ' / 8 glasses today';
+            waterGlasses.forEach(function (g) {
+              g.classList.toggle('active', parseInt(g.getAttribute('data-glass'), 10) <= count);
+            });
+          } catch (e) { /* ignore */ }
+        };
+      });
+
+      // Highlight active water glasses
+      waterGlasses.forEach(function (g) {
+        g.classList.toggle('active', parseInt(g.getAttribute('data-glass'), 10) <= today.waterGlasses);
+      });
+
+      // Update cycle info
+      var cycleInfo = document.getElementById('cycle-info');
+      if (cycleInfo) {
+        cycleInfo.textContent = today.cycleStart
+          ? 'Last cycle start: ' + today.cycleStart
+          : 'No cycle data logged yet.';
+      }
+
+      // Render weekly summary
+      var summaryEl = document.getElementById('weekly-summary');
+      if (summaryEl) {
+        summaryEl.innerHTML = '';
+        var summary = getWeeklySummary();
+        summary.forEach(function (day) {
+          var cell = document.createElement('div');
+          cell.className = 'day-cell';
+          var parts = day.date.split('-');
+          var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          var dayLabel = document.createElement('div');
+          dayLabel.className = 'day-cell-label';
+          dayLabel.textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'numeric', day: 'numeric' });
+          var moodEl = document.createElement('div');
+          moodEl.className = 'day-cell-mood';
+          moodEl.textContent = day.mood || '—';
+          var waterEl = document.createElement('div');
+          waterEl.className = 'text-xs text-muted';
+          waterEl.textContent = '💧 ' + day.waterGlasses;
+          cell.appendChild(dayLabel);
+          cell.appendChild(moodEl);
+          cell.appendChild(waterEl);
+          summaryEl.appendChild(cell);
+        });
+      }
+
+      // Wire Log Mood button
+      var logMoodBtn = document.getElementById('log-mood-btn');
+      if (logMoodBtn) {
+        logMoodBtn.onclick = function () {
+          var note = document.getElementById('mood-note');
+          logMood(_selectedMood, note ? note.value : '');
+          if (typeof ReminderSystem !== 'undefined') {
+            ReminderSystem.showToast('Mood logged! ' + (_selectedMood || ''), 'success');
+          }
+        };
+      }
+
+      // Wire Log Water button
+      var logWaterBtn = document.getElementById('log-water-btn');
+      if (logWaterBtn) {
+        logWaterBtn.onclick = function () {
+          var waterInput = document.getElementById('water-input');
+          var waterError = document.getElementById('water-error');
+          var val = parseFloat(waterInput ? waterInput.value : '');
+          if (waterError) waterError.classList.remove('visible');
+          try {
+            logWater(val);
+            var lbl = document.getElementById('water-count-label');
+            if (lbl) lbl.textContent = val + ' / 8 glasses today';
+            waterGlasses.forEach(function (g) {
+              g.classList.toggle('active', parseInt(g.getAttribute('data-glass'), 10) <= val);
+            });
+          } catch (e) {
+            if (waterError) waterError.classList.add('visible');
+          }
+        };
+      }
+
+      // Wire Log Sleep button
+      var logSleepBtn = document.getElementById('log-sleep-btn');
+      if (logSleepBtn) {
+        logSleepBtn.onclick = function () {
+          var sleepInput = document.getElementById('sleep-input');
+          var sleepError = document.getElementById('sleep-error');
+          var val = parseFloat(sleepInput ? sleepInput.value : '');
+          if (sleepError) sleepError.classList.remove('visible');
+          try {
+            logSleep(val);
+            if (typeof ReminderSystem !== 'undefined') {
+              ReminderSystem.showToast('Sleep logged: ' + val + ' hours', 'success');
+            }
+          } catch (e) {
+            if (sleepError) sleepError.classList.add('visible');
+          }
+        };
+      }
+
+      // Wire Log Cycle button
+      var logCycleBtn = document.getElementById('log-cycle-btn');
+      if (logCycleBtn) {
+        logCycleBtn.onclick = function () {
+          var cycleDateInput = document.getElementById('cycle-date');
+          var dateVal = cycleDateInput ? cycleDateInput.value : '';
+          if (dateVal) {
+            logCycle(dateVal);
+            var ci = document.getElementById('cycle-info');
+            if (ci) ci.textContent = 'Last cycle start: ' + dateVal;
+          }
+        };
+      }
+    }
+
+    return {
+      logMood: logMood,
+      logWater: logWater,
+      logSleep: logSleep,
+      logCycle: logCycle,
+      getWeeklySummary: getWeeklySummary,
+      renderWellness: renderWellness,
+      _getToday: _getToday,
+      _loadAll: _loadAll,
+      _getTodayEntry: _getTodayEntry,
+      _saveEntry: _saveEntry
+    };
+  })();
+
+  // =====================================================
+  // HABIT MODULE
+  // Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6
+  // =====================================================
+  var HabitModule = (function () {
+    var STORAGE_KEY = 'herday_habits';
+
+    function _getToday() {
+      var d = new Date();
+      var yyyy = d.getFullYear();
+      var mm = String(d.getMonth() + 1).padStart(2, '0');
+      var dd = String(d.getDate()).padStart(2, '0');
+      return yyyy + '-' + mm + '-' + dd;
+    }
+
+    function _loadAll() {
+      return State.get(STORAGE_KEY) || [];
+    }
+
+    function _saveAll(habits) {
+      State.set(STORAGE_KEY, habits);
+    }
+
+    /**
+     * addHabit(name, frequency) — validates name, creates and persists a new Habit.
+     * Requirements: 6.1, 6.2
+     */
+    function addHabit(name, frequency) {
+      var trimmed = (name || '').trim();
+      if (!trimmed || trimmed.length > 60) {
+        throw new Error('Habit name is required and must be 60 characters or fewer.');
+      }
+      var habit = {
+        id: generateUUID(),
+        name: trimmed,
+        frequency: frequency || 'daily',
+        completedDates: [],
+        createdAt: new Date().toISOString()
+      };
+      var habits = _loadAll();
+      habits.push(habit);
+      _saveAll(habits);
+      return habit;
+    }
+
+    /**
+     * deleteHabit(id) — removes habit by id and persists.
+     * Requirements: 6.6
+     */
+    function deleteHabit(id) {
+      var habits = _loadAll().filter(function (h) { return h.id !== id; });
+      _saveAll(habits);
+    }
+
+    /**
+     * markComplete(id, date) — appends date to completedDates if not already present, persists.
+     * Requirements: 6.3
+     */
+    function markComplete(id, date) {
+      var habits = _loadAll();
+      var habit = habits.find(function (h) { return h.id === id; });
+      if (!habit) return;
+      if (habit.completedDates.indexOf(date) === -1) {
+        habit.completedDates.push(date);
+        _saveAll(habits);
+      }
+    }
+
+    /**
+     * getStreak(id) — counts consecutive days ending today where habit was completed.
+     * Requirements: 6.4, 6.5
+     */
+    function getStreak(id) {
+      var habits = _loadAll();
+      var habit = habits.find(function (h) { return h.id === id; });
+      if (!habit || !habit.completedDates || habit.completedDates.length === 0) return 0;
+
+      // Sort dates descending
+      var sorted = habit.completedDates.slice().sort(function (a, b) {
+        return b < a ? -1 : b > a ? 1 : 0;
+      });
+
+      var streak = 0;
+      var expected = _getToday();
+
+      for (var i = 0; i < sorted.length; i++) {
+        if (sorted[i] === expected) {
+          streak++;
+          // Move expected back one day
+          var d = new Date(expected + 'T00:00:00');
+          d.setDate(d.getDate() - 1);
+          var yyyy = d.getFullYear();
+          var mm = String(d.getMonth() + 1).padStart(2, '0');
+          var dd = String(d.getDate()).padStart(2, '0');
+          expected = yyyy + '-' + mm + '-' + dd;
+        } else {
+          break;
+        }
+      }
+
+      return streak;
+    }
+
+    /**
+     * renderHabits() — renders habit cards into #habit-list.
+     * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6
+     */
+    function renderHabits() {
+      var listEl = document.getElementById('habit-list');
+      var emptyEl = document.getElementById('habit-empty-state');
+      var form = document.getElementById('habit-form');
+      var nameInput = document.getElementById('habit-name');
+      var freqInput = document.getElementById('habit-frequency');
+      var nameError = document.getElementById('habit-name-error');
+
+      if (!listEl) return;
+
+      var habits = _loadAll();
+      var today = _getToday();
+
+      // Show/hide empty state
+      if (emptyEl) {
+        emptyEl.style.display = habits.length === 0 ? '' : 'none';
+      }
+
+      // Remove existing habit cards (keep empty state element)
+      var existing = listEl.querySelectorAll('.habit-card');
+      existing.forEach(function (el) { el.remove(); });
+
+      // Render each habit card
+      habits.forEach(function (habit) {
+        var streak = getStreak(habit.id);
+        var doneToday = habit.completedDates.indexOf(today) !== -1;
+
+        var card = document.createElement('div');
+        card.className = 'habit-card';
+        card.setAttribute('data-id', habit.id);
+
+        // Streak display
+        var streakDiv = document.createElement('div');
+        streakDiv.className = 'habit-streak';
+        var streakCount = document.createElement('span');
+        streakCount.className = 'streak-count';
+        streakCount.textContent = String(streak);
+        var streakLabel = document.createElement('span');
+        streakLabel.className = 'streak-label';
+        streakLabel.textContent = '🔥 streak';
+        streakDiv.appendChild(streakCount);
+        streakDiv.appendChild(streakLabel);
+
+        // Habit info
+        var infoDiv = document.createElement('div');
+        infoDiv.className = 'habit-info';
+        var nameEl = document.createElement('div');
+        nameEl.className = 'habit-name';
+        nameEl.textContent = habit.name;
+        var freqEl = document.createElement('div');
+        freqEl.className = 'habit-freq';
+        freqEl.textContent = habit.frequency.charAt(0).toUpperCase() + habit.frequency.slice(1);
+        infoDiv.appendChild(nameEl);
+        infoDiv.appendChild(freqEl);
+
+        // Actions
+        var actionsDiv = document.createElement('div');
+        actionsDiv.style.display = 'flex';
+        actionsDiv.style.gap = 'var(--space-2)';
+        actionsDiv.style.alignItems = 'center';
+
+        // Done Today button
+        var doneBtn = document.createElement('button');
+        doneBtn.type = 'button';
+        doneBtn.className = doneToday ? 'btn btn-accent btn-sm' : 'btn btn-primary btn-sm';
+        doneBtn.textContent = doneToday ? '✓ Done' : 'Done Today';
+        doneBtn.disabled = doneToday;
+        if (doneToday) {
+          doneBtn.style.opacity = '0.6';
+          doneBtn.style.cursor = 'default';
+        }
+        (function (hId) {
+          doneBtn.addEventListener('click', function () {
+            markComplete(hId, today);
+            renderHabits();
+            // Update dashboard stats after marking habit complete (Req 6.3, 10.2)
+            renderDashboard(State.get('herday_profile'));
+          });
+        })(habit.id);
+
+        // Delete button
+        var delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn btn-danger btn-sm btn-icon';
+        delBtn.title = 'Delete habit';
+        delBtn.textContent = '🗑';
+        (function (hId) {
+          delBtn.addEventListener('click', function () {
+            deleteHabit(hId);
+            renderHabits();
+          });
+        })(habit.id);
+
+        actionsDiv.appendChild(doneBtn);
+        actionsDiv.appendChild(delBtn);
+
+        card.appendChild(streakDiv);
+        card.appendChild(infoDiv);
+        card.appendChild(actionsDiv);
+        listEl.appendChild(card);
+      });
+
+      // Wire form submit (remove old listener by replacing form clone)
+      if (form) {
+        var newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+        newForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var nameVal = document.getElementById('habit-name').value;
+          var freqVal = document.getElementById('habit-frequency').value;
+          var errEl = document.getElementById('habit-name-error');
+          // Clear error
+          if (errEl) errEl.classList.remove('visible');
+          try {
+            addHabit(nameVal, freqVal);
+            newForm.reset();
+            renderHabits();
+          } catch (err) {
+            if (errEl) errEl.classList.add('visible');
+          }
+        });
+      }
+    }
+
+    return {
+      addHabit: addHabit,
+      deleteHabit: deleteHabit,
+      markComplete: markComplete,
+      getStreak: getStreak,
+      renderHabits: renderHabits,
+      _getToday: _getToday,
+      _loadAll: _loadAll
+    };
+  })();
+
+  // =====================================================
+  // GOAL MODULE
+  // Requirements: 7.1, 7.2, 7.3, 7.4, 7.5
+  // =====================================================
+
+  /**
+   * renderProgressBar(percent) — returns an HTML string for a progress bar.
+   * Uses innerHTML (structural HTML only, not user content).
+   * Requirements: 7.5
+   */
+  function renderProgressBar(percent) {
+    return '<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:' + percent + '%"></div></div>';
+  }
+
+  var GoalModule = (function () {
+    var STORAGE_KEY = 'herday_goals';
+
+    function _loadAll() {
+      return State.get(STORAGE_KEY) || [];
+    }
+
+    function _saveAll(goals) {
+      State.set(STORAGE_KEY, goals);
+    }
+
+    /**
+     * addGoal(data) — validates and creates a new Goal.
+     * Throws Error if title is empty/too long or progress is out of [0,100].
+     * Requirements: 7.1, 7.2, 7.3
+     */
+    function addGoal(data) {
+      var title = (data.title || '').trim();
+      if (!title || title.length > 100) {
+        throw new Error('Title is required (max 100 characters).');
+      }
+      var progress = Number(data.progress);
+      if (isNaN(progress) || progress < 0 || progress > 100) {
+        throw new Error('Progress must be between 0 and 100.');
+      }
+      var goal = {
+        id: generateUUID(),
+        title: title,
+        description: data.description || '',
+        targetDate: data.targetDate || '',
+        progress: progress,
+        createdAt: new Date().toISOString()
+      };
+      var goals = _loadAll();
+      goals.push(goal);
+      _saveAll(goals);
+      return goal;
+    }
+
+    /**
+     * updateProgress(id, percent) — validates percent in [0,100] and updates goal.
+     * Throws Error if percent is invalid or goal not found.
+     * Requirements: 7.2, 7.3
+     */
+    function updateProgress(id, percent) {
+      var p = Number(percent);
+      if (isNaN(p) || p < 0 || p > 100) {
+        throw new Error('Progress must be between 0 and 100.');
+      }
+      var goals = _loadAll();
+      var found = false;
+      for (var i = 0; i < goals.length; i++) {
+        if (goals[i].id === id) {
+          goals[i].progress = p;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        throw new Error('Goal not found.');
+      }
+      _saveAll(goals);
+    }
+
+    /**
+     * deleteGoal(id) — removes goal by id and persists.
+     * Requirements: 7.4
+     */
+    function deleteGoal(id) {
+      var goals = _loadAll();
+      _saveAll(goals.filter(function (g) { return g.id !== id; }));
+    }
+
+    /**
+     * renderGoals() — renders goal cards into #goal-list.
+     * Wires #goal-form submit, update progress, and delete controls.
+     * Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 11.4
+     */
+    function renderGoals() {
+      var listEl = document.getElementById('goal-list');
+      var emptyState = document.getElementById('goal-empty-state');
+      var form = document.getElementById('goal-form');
+      if (!listEl) return;
+
+      var goals = _loadAll();
+
+      // Clear existing goal cards (keep empty state element)
+      var children = Array.prototype.slice.call(listEl.children);
+      children.forEach(function (child) {
+        if (child.id !== 'goal-empty-state') {
+          listEl.removeChild(child);
+        }
+      });
+
+      // Show/hide empty state
+      if (emptyState) {
+        emptyState.style.display = goals.length === 0 ? '' : 'none';
+      }
+
+      // Render each goal card
+      goals.forEach(function (goal) {
+        var card = document.createElement('div');
+        card.className = 'card goal-card';
+
+        // Title
+        var titleEl = document.createElement('h3');
+        titleEl.className = 'card-title';
+        titleEl.textContent = goal.title;
+        card.appendChild(titleEl);
+
+        // Description
+        if (goal.description) {
+          var descEl = document.createElement('p');
+          descEl.className = 'card-body text-sm';
+          descEl.textContent = goal.description;
+          card.appendChild(descEl);
+        }
+
+        // Target date
+        if (goal.targetDate) {
+          var dateEl = document.createElement('p');
+          dateEl.className = 'text-xs text-muted';
+          dateEl.style.marginTop = 'var(--space-1)';
+          dateEl.textContent = 'Target: ' + goal.targetDate;
+          card.appendChild(dateEl);
+        }
+
+        // Progress bar (structural HTML — innerHTML acceptable)
+        var progressWrap = document.createElement('div');
+        progressWrap.style.marginTop = 'var(--space-3)';
+        progressWrap.innerHTML = renderProgressBar(goal.progress);
+        card.appendChild(progressWrap);
+
+        // Progress percentage label
+        var percentLabel = document.createElement('p');
+        percentLabel.className = 'text-xs text-muted';
+        percentLabel.style.marginTop = 'var(--space-1)';
+        percentLabel.textContent = goal.progress + '% complete';
+        card.appendChild(percentLabel);
+
+        // Update progress row
+        var updateRow = document.createElement('div');
+        updateRow.style.display = 'flex';
+        updateRow.style.gap = 'var(--space-2)';
+        updateRow.style.marginTop = 'var(--space-3)';
+        updateRow.style.alignItems = 'center';
+
+        var progressInput = document.createElement('input');
+        progressInput.type = 'number';
+        progressInput.className = 'form-input';
+        progressInput.min = '0';
+        progressInput.max = '100';
+        progressInput.value = String(goal.progress);
+        progressInput.style.width = '80px';
+        progressInput.setAttribute('aria-label', 'Update progress for ' + goal.title);
+        updateRow.appendChild(progressInput);
+
+        var updateBtn = document.createElement('button');
+        updateBtn.type = 'button';
+        updateBtn.className = 'btn btn-accent btn-sm';
+        updateBtn.textContent = 'Update';
+        updateRow.appendChild(updateBtn);
+
+        // Inline progress error
+        var progressErr = document.createElement('span');
+        progressErr.className = 'form-error';
+        progressErr.id = 'goal-progress-error-' + goal.id;
+        progressErr.textContent = 'Progress must be between 0 and 100.';
+        updateRow.appendChild(progressErr);
+
+        card.appendChild(updateRow);
+
+        // Update button handler
+        (function (gId, pInput, pErr) {
+          updateBtn.addEventListener('click', function () {
+            pErr.classList.remove('visible');
+            try {
+              updateProgress(gId, pInput.value);
+              renderGoals();
+            } catch (err) {
+              pErr.classList.add('visible');
+            }
+          });
+        })(goal.id, progressInput, progressErr);
+
+        // Delete button
+        var deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'btn btn-danger btn-sm';
+        deleteBtn.style.marginTop = 'var(--space-2)';
+        deleteBtn.textContent = '🗑 Delete';
+        deleteBtn.setAttribute('aria-label', 'Delete goal: ' + goal.title);
+        card.appendChild(deleteBtn);
+
+        (function (gId) {
+          deleteBtn.addEventListener('click', function () {
+            deleteGoal(gId);
+            renderGoals();
+          });
+        })(goal.id);
+
+        listEl.appendChild(card);
+      });
+
+      // Wire form submit (replace clone to remove stale listeners)
+      if (form) {
+        var newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+        newForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var titleErr = document.getElementById('goal-title-error');
+          var progressErr = document.getElementById('goal-progress-error');
+          if (titleErr) titleErr.classList.remove('visible');
+          if (progressErr) progressErr.classList.remove('visible');
+
+          var titleVal = document.getElementById('goal-title').value;
+          var descVal = document.getElementById('goal-description').value;
+          var dateVal = document.getElementById('goal-target-date').value;
+          var progressVal = document.getElementById('goal-progress-init').value;
+
+          try {
+            addGoal({ title: titleVal, description: descVal, targetDate: dateVal, progress: progressVal });
+            newForm.reset();
+            renderGoals();
+          } catch (err) {
+            var msg = err.message || '';
+            if (msg.toLowerCase().indexOf('title') !== -1) {
+              if (titleErr) titleErr.classList.add('visible');
+            } else {
+              if (progressErr) progressErr.classList.add('visible');
+            }
+          }
+        });
+      }
+    }
+
+    return {
+      addGoal: addGoal,
+      updateProgress: updateProgress,
+      deleteGoal: deleteGoal,
+      renderGoals: renderGoals,
+      _loadAll: _loadAll
+    };
+  })();
+
+  // =====================================================
+  // CHATBOT ENGINE
+  // Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8
+  // =====================================================
+
+  /**
+   * Intent enum — plain object mapping intent names to string values.
+   */
+  var Intent = {
+    TASKS:    'tasks',
+    PLANNER:  'planner',
+    WELLNESS: 'wellness',
+    HABITS:   'habits',
+    GOALS:    'goals',
+    SAFETY:   'safety',
+    APP_HELP: 'app_help',
+    GENERAL:  'general'
+  };
+
+  // =====================================================
+  // SAFETY MODULE
+  // Requirements: 11.1, 11.2, 11.3, 11.4
+  // =====================================================
+  var SafetyModule = (function () {
+
+    var STORAGE_KEY = 'herday_contacts';
+
+    /** Load all contacts from State */
+    function _loadAll() {
+      return State.get(STORAGE_KEY) || [];
+    }
+
+    /** Save contacts array to State */
+    function _saveAll(contacts) {
+      State.set(STORAGE_KEY, contacts);
+    }
+
+    /**
+     * addContact(data) — validates name and phone, creates contact with UUID,
+     * persists, and returns the new contact.
+     * Requirements: 11.1
+     */
+    function addContact(data) {
+      var name  = (data.name  || '').trim();
+      var phone = (data.phone || '').trim();
+      var relation = (data.relation || '').trim();
+
+      if (!name)  throw new Error('Name is required.');
+      if (!phone) throw new Error('Phone number is required.');
+
+      var contact = {
+        id:       generateUUID(),
+        name:     name,
+        phone:    phone,
+        relation: relation
+      };
+
+      var contacts = _loadAll();
+      contacts.push(contact);
+      _saveAll(contacts);
+      return contact;
+    }
+
+    /**
+     * editContact(id, data) — validates, finds by id, merges, persists,
+     * and returns the updated contact.
+     * Requirements: 11.2
+     */
+    function editContact(id, data) {
+      var name  = (data.name  || '').trim();
+      var phone = (data.phone || '').trim();
+      var relation = (data.relation || '').trim();
+
+      if (!name)  throw new Error('Name is required.');
+      if (!phone) throw new Error('Phone number is required.');
+
+      var contacts = _loadAll();
+      var idx = contacts.findIndex(function (c) { return c.id === id; });
+      if (idx === -1) throw new Error('Contact not found.');
+
+      contacts[idx] = Object.assign({}, contacts[idx], { name: name, phone: phone, relation: relation });
+      _saveAll(contacts);
+      return contacts[idx];
+    }
+
+    /**
+     * deleteContact(id) — filters out the contact by id and persists.
+     * Requirements: 11.2
+     */
+    function deleteContact(id) {
+      var contacts = _loadAll().filter(function (c) { return c.id !== id; });
+      _saveAll(contacts);
+    }
+
+    /**
+     * renderContacts() — renders contact cards into #contact-list.
+     * Wires #contact-form submit handler.
+     * Requirements: 11.1, 11.2, 11.4
+     */
+    function renderContacts() {
+      var listEl       = document.getElementById('contact-list');
+      var emptyState   = document.getElementById('contact-empty-state');
+      var form         = document.getElementById('contact-form');
+      var nameInput    = document.getElementById('contact-name');
+      var phoneInput   = document.getElementById('contact-phone');
+      var relationInput = document.getElementById('contact-relation');
+      var nameError    = document.getElementById('contact-name-error');
+      var phoneError   = document.getElementById('contact-phone-error');
+
+      if (!listEl) return;
+
+      var contacts = _loadAll();
+
+      // Show/hide empty state
+      if (emptyState) {
+        emptyState.style.display = contacts.length === 0 ? '' : 'none';
+      }
+
+      // Remove existing contact cards (keep empty state element)
+      var existing = listEl.querySelectorAll('.contact-card');
+      existing.forEach(function (el) { el.remove(); });
+
+      contacts.forEach(function (contact) {
+        var card = document.createElement('div');
+        card.className = 'contact-card card';
+        card.style.cssText = 'display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);margin-bottom:var(--space-3);';
+
+        // Avatar
+        var avatar = document.createElement('div');
+        avatar.style.cssText = 'width:44px;height:44px;border-radius:var(--radius-full);background:var(--color-pink-200);display:flex;align-items:center;justify-content:center;font-weight:var(--font-weight-bold);font-size:var(--font-size-lg);color:var(--color-pink-500);flex-shrink:0;';
+        avatar.textContent = contact.name.charAt(0).toUpperCase();
+
+        // Info
+        var info = document.createElement('div');
+        info.style.cssText = 'flex:1;min-width:0;';
+
+        var nameEl = document.createElement('div');
+        nameEl.style.cssText = 'font-weight:var(--font-weight-semibold);color:var(--text-primary);';
+        nameEl.textContent = contact.name;
+
+        var phoneEl = document.createElement('div');
+        phoneEl.style.cssText = 'font-size:var(--font-size-sm);color:var(--text-secondary);';
+        phoneEl.textContent = contact.phone;
+
+        var relationEl = document.createElement('div');
+        relationEl.style.cssText = 'font-size:var(--font-size-xs);color:var(--text-muted);';
+        relationEl.textContent = contact.relation;
+
+        info.appendChild(nameEl);
+        info.appendChild(phoneEl);
+        if (contact.relation) info.appendChild(relationEl);
+
+        // Actions
+        var actions = document.createElement('div');
+        actions.style.cssText = 'display:flex;gap:var(--space-2);flex-shrink:0;';
+
+        var editBtn = document.createElement('button');
+        editBtn.className = 'btn btn-ghost btn-sm';
+        editBtn.textContent = '✏️ Edit';
+        editBtn.setAttribute('aria-label', 'Edit contact');
+        editBtn.addEventListener('click', function () {
+          var newName     = prompt('Name:', contact.name);
+          if (newName === null) return;
+          var newPhone    = prompt('Phone:', contact.phone);
+          if (newPhone === null) return;
+          var newRelation = prompt('Relation:', contact.relation);
+          if (newRelation === null) return;
+          try {
+            editContact(contact.id, { name: newName, phone: newPhone, relation: newRelation });
+            renderContacts();
+          } catch (e) {
+            alert(e.message);
+          }
+        });
+
+        var deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-danger btn-sm';
+        deleteBtn.textContent = '🗑️';
+        deleteBtn.setAttribute('aria-label', 'Delete contact');
+        deleteBtn.addEventListener('click', function () {
+          if (confirm('Delete this contact?')) {
+            deleteContact(contact.id);
+            renderContacts();
+          }
+        });
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        card.appendChild(avatar);
+        card.appendChild(info);
+        card.appendChild(actions);
+        listEl.appendChild(card);
+      });
+
+      // Wire form submit (replace listener by cloning)
+      if (form) {
+        var newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+        newForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var ni = newForm.querySelector('#contact-name');
+          var pi = newForm.querySelector('#contact-phone');
+          var ri = newForm.querySelector('#contact-relation');
+          var ne = newForm.querySelector('#contact-name-error');
+          var pe = newForm.querySelector('#contact-phone-error');
+
+          if (ne) ne.classList.remove('visible');
+          if (pe) pe.classList.remove('visible');
+
+          try {
+            addContact({
+              name:     ni ? ni.value : '',
+              phone:    pi ? pi.value : '',
+              relation: ri ? ri.value : ''
+            });
+            newForm.reset();
+            renderContacts();
+          } catch (err) {
+            var msg = err.message || '';
+            if (msg.toLowerCase().indexOf('name') !== -1 && ne) {
+              ne.classList.add('visible');
+            } else if (msg.toLowerCase().indexOf('phone') !== -1 && pe) {
+              pe.classList.add('visible');
+            }
+          }
+        });
+      }
+    }
+
+    /**
+     * renderSOSContacts() — renders contacts into #sos-contacts-list for the SOS modal.
+     * Requirements: 11.3, 11.4
+     */
+    function renderSOSContacts() {
+      var listEl   = document.getElementById('sos-contacts-list');
+      var noContacts = document.getElementById('sos-no-contacts');
+      if (!listEl) return;
+
+      listEl.innerHTML = '';
+      var contacts = _loadAll();
+
+      if (contacts.length === 0) {
+        if (noContacts) {
+          var msg = noContacts.cloneNode(false);
+          msg.textContent = 'No emergency contacts saved yet. Add them in the Safety section.';
+          listEl.appendChild(msg);
+        } else {
+          var p = document.createElement('p');
+          p.className = 'text-muted text-sm text-center';
+          p.textContent = 'No emergency contacts saved yet. Add them in the Safety section.';
+          listEl.appendChild(p);
+        }
+        return;
+      }
+
+      contacts.forEach(function (c) {
+        var item = document.createElement('div');
+        item.style.cssText = 'padding:var(--space-3);background:var(--color-pink-50);border-radius:var(--radius-md);margin-bottom:var(--space-2);';
+
+        var nameEl = document.createElement('strong');
+        nameEl.textContent = c.name;
+
+        var relEl = document.createElement('span');
+        relEl.style.cssText = 'color:var(--text-muted);font-size:var(--font-size-sm);margin-left:var(--space-2);';
+        relEl.textContent = c.relation ? '(' + c.relation + ')' : '';
+
+        var phoneEl = document.createElement('div');
+        phoneEl.style.cssText = 'font-size:var(--font-size-sm);color:var(--text-secondary);margin-top:var(--space-1);';
+        phoneEl.textContent = c.phone;
+
+        item.appendChild(nameEl);
+        if (c.relation) item.appendChild(relEl);
+        item.appendChild(phoneEl);
+        listEl.appendChild(item);
+      });
+    }
+
+    return {
+      addContact:       addContact,
+      editContact:      editContact,
+      deleteContact:    deleteContact,
+      renderContacts:   renderContacts,
+      renderSOSContacts: renderSOSContacts
+    };
+  })();
+
+  // =====================================================
+  // ANALYTICS MODULE
+  // Requirements: 10.1, 10.2, 10.3, 10.4
+  // =====================================================
+  var AnalyticsModule = (function () {
+
+    /**
+     * getTaskStats() — loads tasks from State and returns total, completed,
+     * and completionRate (0–100 percentage).
+     * Requirements: 10.1
+     */
+    function getTaskStats() {
+      var tasks = State.get('herday_tasks') || [];
+      var total = tasks.length;
+      var completed = tasks.filter(function (t) { return t.completed; }).length;
+      var completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+      return { total: total, completed: completed, completionRate: completionRate };
+    }
+
+    /**
+     * getHabitStats() — loads habits from State and returns array of
+     * { name, streak } for each habit using HabitModule.getStreak(id).
+     * Requirements: 10.2
+     */
+    function getHabitStats() {
+      var habits = State.get('herday_habits') || [];
+      return habits.map(function (h) {
+        return {
+          name: h.name,
+          streak: HabitModule.getStreak(h.id)
+        };
+      });
+    }
+
+    /**
+     * _makeBarRow(label, percent, value) — creates a .bar-row DOM element.
+     * Uses textContent for user-provided label (Req 11.4).
+     * Requirements: 10.3, 10.4
+     */
+    function _makeBarRow(label, percent, value) {
+      var row = document.createElement('div');
+      row.className = 'bar-row';
+
+      var labelEl = document.createElement('span');
+      labelEl.className = 'bar-label';
+      labelEl.textContent = label;
+
+      var track = document.createElement('div');
+      track.className = 'bar-track';
+
+      var fill = document.createElement('div');
+      fill.className = 'bar-fill';
+      fill.style.width = Math.min(100, Math.max(0, percent)) + '%';
+      track.appendChild(fill);
+
+      var valueEl = document.createElement('span');
+      valueEl.className = 'bar-value';
+      valueEl.textContent = value;
+
+      row.appendChild(labelEl);
+      row.appendChild(track);
+      row.appendChild(valueEl);
+      return row;
+    }
+
+    /**
+     * renderCharts() — renders HTML/CSS bar charts (no canvas/SVG) into:
+     *   #task-completion-chart, #habit-streaks-chart,
+     *   #water-chart, #goal-progress-chart
+     * Requirements: 10.3, 10.4
+     */
+    function renderCharts() {
+      // --- Task Completion Chart ---
+      var taskChart = document.getElementById('task-completion-chart');
+      if (taskChart) {
+        taskChart.innerHTML = '';
+        var stats = getTaskStats();
+        var maxTasks = stats.total || 1;
+        var pending = stats.total - stats.completed;
+
+        taskChart.appendChild(_makeBarRow(
+          'Total',
+          100,
+          String(stats.total)
+        ));
+        taskChart.appendChild(_makeBarRow(
+          'Completed',
+          (stats.completed / maxTasks) * 100,
+          String(stats.completed)
+        ));
+        taskChart.appendChild(_makeBarRow(
+          'Pending',
+          (pending / maxTasks) * 100,
+          String(pending)
+        ));
+      }
+
+      // --- Habit Streaks Chart ---
+      var habitChart = document.getElementById('habit-streaks-chart');
+      if (habitChart) {
+        habitChart.innerHTML = '';
+        var habitStats = getHabitStats();
+        if (habitStats.length === 0) {
+          var empty = document.createElement('p');
+          empty.className = 'text-muted text-sm';
+          empty.textContent = 'No habit data yet.';
+          habitChart.appendChild(empty);
+        } else {
+          var maxStreak = habitStats.reduce(function (m, h) {
+            return h.streak > m ? h.streak : m;
+          }, 0);
+          if (maxStreak < 1) maxStreak = 1;
+          habitStats.forEach(function (h) {
+            habitChart.appendChild(_makeBarRow(
+              h.name,
+              (h.streak / maxStreak) * 100,
+              String(h.streak) + ' day' + (h.streak !== 1 ? 's' : '')
+            ));
+          });
+        }
+      }
+
+      // --- Water Intake Chart (last 7 days) ---
+      var waterChart = document.getElementById('water-chart');
+      if (waterChart) {
+        waterChart.innerHTML = '';
+        var weekly = WellnessModule.getWeeklySummary();
+        var waterMax = 8;
+        // weekly is ordered newest-first; reverse for chronological display
+        var waterDays = weekly.slice().reverse();
+        waterDays.forEach(function (day) {
+          var label = day.date ? day.date.slice(5) : '—'; // MM-DD
+          waterChart.appendChild(_makeBarRow(
+            label,
+            (day.waterGlasses / waterMax) * 100,
+            String(day.waterGlasses) + ' gl'
+          ));
+        });
+      }
+
+      // --- Goal Progress Chart ---
+      var goalChart = document.getElementById('goal-progress-chart');
+      if (goalChart) {
+        goalChart.innerHTML = '';
+        var goals = State.get('herday_goals') || [];
+        if (goals.length === 0) {
+          var emptyGoal = document.createElement('p');
+          emptyGoal.className = 'text-muted text-sm';
+          emptyGoal.textContent = 'No goal data yet.';
+          goalChart.appendChild(emptyGoal);
+        } else {
+          goals.forEach(function (g) {
+            goalChart.appendChild(_makeBarRow(
+              g.title,
+              g.progress,
+              String(g.progress) + '%'
+            ));
+          });
+        }
+      }
+    }
+
+    return {
+      getTaskStats:  getTaskStats,
+      getHabitStats: getHabitStats,
+      renderCharts:  renderCharts
+    };
+  })();
+
+  // =====================================================
+  // REMINDER SYSTEM
+  // Requirements: 9.1, 9.2, 9.3, 9.4
+  // =====================================================
+  var ReminderSystem = (function () {
+    var _intervalId = null;
+
+    /**
+     * showToast(message, type) — creates a toast element, appends it to
+     * #toast-container, and auto-removes it after 4 seconds.
+     * Uses textContent for message (Req 11.4).
+     */
+    function showToast(message, type) {
+      var container = document.getElementById('toast-container');
+      if (!container) return;
+
+      var toast = document.createElement('div');
+      toast.className = 'toast ' + (type || 'info');
+      toast.textContent = message;
+
+      container.appendChild(toast);
+
+      setTimeout(function () {
+        toast.classList.add('removing');
+        setTimeout(function () {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, 4000);
+    }
+
+    /**
+     * reminderTick() — checks reminder conditions and fires toasts.
+     * - Water reminder every 2 hours when glasses < 8
+     * - Task due-soon warning if deadline === today's date string
+     * - Sleep wind-down within 30 minutes of configured sleep time
+     */
+    function reminderTick() {
+      var now   = new Date();
+      var hour  = now.getHours();
+      var today = now.toISOString().slice(0, 10);
+
+      // --- Water reminder (Req 9.2) ---
+      var wellnessEntries = State.get('herday_wellness') || [];
+      var wellnessToday   = wellnessEntries.find(function (e) { return e.date === today; }) || {};
+      var glasses = typeof wellnessToday.waterGlasses === 'number' ? wellnessToday.waterGlasses : 0;
+
+      if (hour % 2 === 0 && glasses < 8) {
+        showToast('💧 Time to drink water! Stay hydrated.', 'info');
+      }
+
+      // --- Task due-soon warning (Req 9.3) ---
+      var tasks = State.get('herday_tasks') || [];
+      tasks.forEach(function (task) {
+        if (!task.completed && task.deadline) {
+          // Simplified: if deadline === today's date string, show warning
+          if (task.deadline === today) {
+            showToast('⏰ Task due soon: ' + task.title, 'warning');
+          }
+        }
+      });
+
+      // --- Sleep wind-down (Req 9.4) ---
+      var profile = State.get('herday_profile');
+      if (profile && profile.sleepTime) {
+        var parts        = profile.sleepTime.split(':');
+        var sleepHour    = parseInt(parts[0], 10);
+        var sleepMinute  = parseInt(parts[1], 10);
+        var sleepTotal   = sleepHour * 60 + sleepMinute;
+        var nowTotal     = now.getHours() * 60 + now.getMinutes();
+        var diff         = sleepTotal - nowTotal;
+        if (diff >= 0 && diff <= 30) {
+          showToast('🌙 Time to wind down. Sleep well!', 'info');
+        }
+      }
+    }
+
+    /** start() — begins the 60-second reminder interval. */
+    function start() {
+      if (_intervalId !== null) return; // already running
+      _intervalId = setInterval(reminderTick, 60000);
+    }
+
+    /** stop() — clears the reminder interval. */
+    function stop() {
+      if (_intervalId !== null) {
+        clearInterval(_intervalId);
+        _intervalId = null;
+      }
+    }
+
+    return { start: start, stop: stop, showToast: showToast };
+  })();
+
+  var ChatbotEngine = (function () {
+
+    /**
+     * detectIntent(text) — keyword-matching intent detection.
+     * Returns Intent.GENERAL for empty or unrecognized input.
+     * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7
+     */
+    function detectIntent(text) {
+      if (!text || typeof text !== 'string') return Intent.GENERAL;
+      var lower = text.toLowerCase();
+
+      if (['task', 'todo', 'do today', 'pending'].some(function (kw) { return lower.indexOf(kw) !== -1; })) {
+        return Intent.TASKS;
+      }
+      if (['plan', 'schedule', 'planner', 'time block'].some(function (kw) { return lower.indexOf(kw) !== -1; })) {
+        return Intent.PLANNER;
+      }
+      if (['mood', 'stress', 'tired', 'water', 'sleep', 'wellness', 'health', 'cycle'].some(function (kw) { return lower.indexOf(kw) !== -1; })) {
+        return Intent.WELLNESS;
+      }
+      if (['habit', 'streak', 'routine'].some(function (kw) { return lower.indexOf(kw) !== -1; })) {
+        return Intent.HABITS;
+      }
+      if (['goal', 'progress', 'target'].some(function (kw) { return lower.indexOf(kw) !== -1; })) {
+        return Intent.GOALS;
+      }
+      if (['sos', 'emergency', 'help', 'danger', 'safe', 'safety'].some(function (kw) { return lower.indexOf(kw) !== -1; })) {
+        return Intent.SAFETY;
+      }
+      if (['what is', 'how to', 'where is', 'app', 'feature'].some(function (kw) { return lower.indexOf(kw) !== -1; })) {
+        return Intent.APP_HELP;
+      }
+
+      return Intent.GENERAL;
+    }
+
+    /**
+     * buildResponse(intent, data) — returns a contextual non-empty string for each intent.
+     * data = { profile, tasks, habits, goals, wellness }
+     * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
+     */
+    function buildResponse(intent, data) {
+      var profile  = (data && data.profile)  || null;
+      var tasks    = (data && data.tasks)    || [];
+      var habits   = (data && data.habits)   || [];
+      var goals    = (data && data.goals)    || [];
+      var wellness = (data && data.wellness) || null;
+      var name     = (profile && profile.name) ? profile.name : 'there';
+
+      switch (intent) {
+        case Intent.TASKS: {
+          var pending = tasks.filter(function (t) { return !t.completed; });
+          if (pending.length === 0) {
+            return 'Great job, ' + name + '! You have no pending tasks right now. 🎉 Add a new task to get started!';
+          }
+          var top3 = pending.slice(0, 3).map(function (t) { return '"' + t.title + '"'; }).join(', ');
+          return 'Hi ' + name + '! You have ' + pending.length + ' pending task(s). Your top tasks are: ' + top3 + '. Keep it up! 📋';
+        }
+
+        case Intent.PLANNER: {
+          var plan = State.get('herday_plan');
+          if (plan && plan.blocks && plan.blocks.length > 0) {
+            return 'Your plan for today has ' + plan.blocks.length + ' time block(s) scheduled. Head to the Planner section to see the full schedule! 🗓️';
+          }
+          return 'No plan generated yet, ' + name + '. Go to the Planner section to generate your personalized daily schedule! 🗓️';
+        }
+
+        case Intent.WELLNESS: {
+          if (wellness) {
+            var moodStr  = wellness.mood ? 'Your mood today is ' + wellness.mood + '.' : 'No mood logged yet today.';
+            var waterStr = typeof wellness.waterGlasses === 'number'
+              ? 'You\'ve had ' + wellness.waterGlasses + ' glass(es) of water.'
+              : 'No water intake logged yet.';
+            return moodStr + ' ' + waterStr + ' Keep taking care of yourself, ' + name + '! 💧';
+          }
+          return 'No wellness data logged for today yet, ' + name + '. Head to the Wellness section to log your mood and water intake! 🌿';
+        }
+
+        case Intent.HABITS: {
+          if (habits.length === 0) {
+            return 'You haven\'t added any habits yet, ' + name + '. Start building your routines in the Habits section! 🌟';
+          }
+          var bestStreak = 0;
+          habits.forEach(function (h) {
+            if (typeof HabitModule !== 'undefined') {
+              var s = HabitModule.getStreak(h.id);
+              if (s > bestStreak) bestStreak = s;
+            }
+          });
+          return 'You\'re tracking ' + habits.length + ' habit(s), ' + name + '. Your best current streak is ' + bestStreak + ' day(s). Keep it going! 🔥';
+        }
+
+        case Intent.GOALS: {
+          if (goals.length === 0) {
+            return 'No goals set yet, ' + name + '. Head to the Goals section to set your first target! 🎯';
+          }
+          var totalProgress = goals.reduce(function (sum, g) { return sum + (g.progress || 0); }, 0);
+          var avgProgress = Math.round(totalProgress / goals.length);
+          return 'You have ' + goals.length + ' goal(s) with an average progress of ' + avgProgress + '%. You\'re doing great, ' + name + '! 🎯';
+        }
+
+        case Intent.SAFETY: {
+          if (typeof Router !== 'undefined') {
+            Router.navigate('safety');
+          }
+          return 'I\'ve directed you to the Safety Center. Stay safe! 🛡️';
+        }
+
+        case Intent.APP_HELP: {
+          return 'HerDay AI is your all-in-one productivity companion! 🌸 You can manage tasks, plan your day, track wellness, build habits, set goals, and access safety tools — all in one place. Use the menu to explore each section!';
+        }
+
+        default: {
+          return 'Hi ' + name + '! 🌸 I\'m here to help. You can ask me about your tasks, planner, wellness, habits, goals, or safety. What would you like to know?';
+        }
+      }
+    }
+
+    /**
+     * processMessage(text) — detects intent, loads data, builds response,
+     * appends to chat history (capped at 100), returns response string.
+     * Never throws; always returns a non-empty string.
+     * Requirements: 8.7, 8.8
+     */
+    function processMessage(text) {
+      try {
+        var intent = detectIntent(text);
+
+        var data = {
+          profile:  State.get('herday_profile'),
+          tasks:    State.get('herday_tasks')    || [],
+          habits:   State.get('herday_habits')   || [],
+          goals:    State.get('herday_goals')    || [],
+          wellness: (function () {
+            var today = new Date().toISOString().slice(0, 10);
+            var entries = State.get('herday_wellness') || [];
+            return entries.find(function (e) { return e.date === today; }) || null;
+          })()
+        };
+
+        var response = buildResponse(intent, data);
+        if (!response) response = 'I\'m here to help! 🌸';
+
+        // Append to chat history and cap at 100
+        var history = State.get('herday_chat_history') || [];
+        history.push({ role: 'user', text: text,     timestamp: new Date().toISOString() });
+        history.push({ role: 'bot',  text: response, timestamp: new Date().toISOString() });
+        if (history.length > 100) {
+          history = history.slice(history.length - 100);
+        }
+        State.set('herday_chat_history', history);
+
+        return response;
+      } catch (err) {
+        return 'I\'m here to help! 🌸 (Something went wrong — please try again.)';
+      }
+    }
+
+    return {
+      detectIntent:  detectIntent,
+      buildResponse: buildResponse,
+      processMessage: processMessage
+    };
+  })();
+
+  // Register dashboard section with Router
+  Router.registerSection('dashboard', function () { renderDashboard(State.get('herday_profile')); });
+
+  // Register safety section with Router
+  Router.registerSection('safety', function () { SafetyModule.renderContacts(); });
+
+  // Register analytics section with Router
+  Router.registerSection('analytics', function () { AnalyticsModule.renderCharts(); });
+
+  // Register goals section with Router
+  Router.registerSection('goals', function () { GoalModule.renderGoals(); });
+
+  // Register habits section with Router
+  Router.registerSection('habits', function () { HabitModule.renderHabits(); });
+
+  // Register wellness section with Router
+  Router.registerSection('wellness', function () { WellnessModule.renderWellness(); });
+
+  // Register planner section with Router
+  Router.registerSection('planner', function () {
+    var plannerDate = document.getElementById('planner-date');
+    if (plannerDate) {
+      plannerDate.textContent = new Date().toLocaleDateString(undefined, {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+    }
+  });
+
+  // =====================================================
+  // CHATBOT UI WIRING
+  // Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7
+  // =====================================================
+
+  (function () {
+    var toggleBtn  = document.getElementById('chatbot-toggle-btn');
+    var panel      = document.getElementById('chatbot-panel');
+    var closeBtn   = document.getElementById('chatbot-close-btn');
+    var sendBtn    = document.getElementById('chatbot-send-btn');
+    var inputEl    = document.getElementById('chatbot-input');
+    var messagesEl = document.getElementById('chatbot-messages');
+
+    /** Open / close the chatbot panel */
+    function openPanel() {
+      if (panel)      panel.classList.add('open');
+      if (toggleBtn)  toggleBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    function closePanel() {
+      if (panel)      panel.classList.remove('open');
+      if (toggleBtn)  toggleBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    /** Scroll messages container to the bottom */
+    function scrollToBottom() {
+      if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    /** Append a message bubble to the messages container */
+    function appendBubble(text, role) {
+      var bubble = document.createElement('div');
+      bubble.className = 'chat-bubble ' + role;
+      bubble.textContent = text;   // Req 11.4 — textContent only
+      if (messagesEl) messagesEl.appendChild(bubble);
+      scrollToBottom();
+      return bubble;
+    }
+
+    /** Show typing indicator */
+    function showTyping() {
+      var typing = document.createElement('div');
+      typing.className = 'chat-typing';
+      typing.id = 'chat-typing-indicator';
+      typing.innerHTML = '<span></span><span></span><span></span>';
+      if (messagesEl) messagesEl.appendChild(typing);
+      scrollToBottom();
+      return typing;
+    }
+
+    /** Remove typing indicator */
+    function removeTyping() {
+      var el = document.getElementById('chat-typing-indicator');
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    }
+
+    /**
+     * sendMessage(text) — appends user bubble, shows typing indicator,
+     * then after 800ms appends bot response bubble.
+     */
+    function sendMessage(text) {
+      if (!text || !text.trim()) return;
+      var trimmed = text.trim();
+
+      appendBubble(trimmed, 'user');
+      showTyping();
+
+      setTimeout(function () {
+        removeTyping();
+        var response = ChatbotEngine.processMessage(trimmed);
+        appendBubble(response, 'bot');
+      }, 800);
+    }
+
+    // Wire toggle button
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function () {
+        if (panel && panel.classList.contains('open')) {
+          closePanel();
+        } else {
+          openPanel();
+        }
+      });
+    }
+
+    // Wire close button
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closePanel);
+    }
+
+    // Wire send button
+    if (sendBtn) {
+      sendBtn.addEventListener('click', function () {
+        if (inputEl) {
+          var val = inputEl.value;
+          inputEl.value = '';
+          sendMessage(val);
+        }
+      });
+    }
+
+    // Wire Enter key on input
+    if (inputEl) {
+      inputEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          var val = inputEl.value;
+          inputEl.value = '';
+          sendMessage(val);
+        }
+      });
+    }
+
+    // Wire suggestion chips
+    var chips = document.querySelectorAll('.suggestion-chip');
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        sendMessage(chip.textContent);
+      });
+    });
+  })();
+
+  // =====================================================
+  // SOS MODAL WIRING
+  // Requirements: 11.3, 11.4
+  // =====================================================
+  (function () {
+    var sosModal     = document.getElementById('sos-modal');
+    var sosTrigger   = document.getElementById('sos-trigger-btn');
+    var sosSafetyBtn = document.getElementById('safety-sos-btn');
+    var sosCloseBtn  = document.getElementById('sos-close-btn');
+    var sosDismiss   = document.getElementById('sos-dismiss-btn');
+    var sosContactsList = document.getElementById('sos-contacts-list');
+
+    function openSosModal() {
+      if (!sosModal) return;
+      // Render contacts (Req 11.4 — textContent only)
+      if (sosContactsList) {
+        sosContactsList.innerHTML = '';
+        var contacts = State.get('herday_contacts') || [];
+        if (contacts.length === 0) {
+          var empty = document.createElement('p');
+          empty.textContent = 'No emergency contacts saved yet.';
+          sosContactsList.appendChild(empty);
+        } else {
+          contacts.forEach(function (c) {
+            var item = document.createElement('div');
+            item.className = 'contact-item';
+
+            var name = document.createElement('strong');
+            name.textContent = c.name;
+
+            var relation = document.createElement('span');
+            relation.textContent = ' (' + c.relation + ')';
+
+            var phone = document.createElement('a');
+            phone.href = 'tel:' + c.phone;
+            phone.textContent = c.phone;
+
+            item.appendChild(name);
+            item.appendChild(relation);
+            item.appendChild(document.createElement('br'));
+            item.appendChild(phone);
+            sosContactsList.appendChild(item);
+          });
+        }
+      }
+      sosModal.classList.add('open');
+    }
+
+    function closeSosModal() {
+      if (sosModal) sosModal.classList.remove('open');
+    }
+
+    if (sosTrigger)   sosTrigger.addEventListener('click', openSosModal);
+    if (sosSafetyBtn) sosSafetyBtn.addEventListener('click', openSosModal);
+    if (sosCloseBtn)  sosCloseBtn.addEventListener('click', closeSosModal);
+    if (sosDismiss)   sosDismiss.addEventListener('click', closeSosModal);
+  })();
+
+  // =====================================================
+  // SETTINGS — Clear Data Button
+  // Requirements: 13.1
+  // =====================================================
+  (function () {
+    var clearBtn = document.getElementById('clear-data-btn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+          State.clear();
+          window.location.reload();
+        }
+      });
+    }
+  })();
+
+  // =====================================================
+  // SETTINGS FORM WIRING
+  // Requirements: 13.1, 13.2
+  // =====================================================
+  (function () {
+    var form           = document.getElementById('settings-form');
+    var nameInput      = document.getElementById('settings-name');
+    var userTypeInput  = document.getElementById('settings-user-type');
+    var wakeInput      = document.getElementById('settings-wake');
+    var sleepInput     = document.getElementById('settings-sleep');
+    var workStartInput = document.getElementById('settings-work-start');
+    var workEndInput   = document.getElementById('settings-work-end');
+    var nameError      = document.getElementById('settings-name-error');
+    var wakeSleepError = document.getElementById('settings-wake-sleep-error');
+    var workError      = document.getElementById('settings-work-error');
+
+    /** Pre-populate the settings form from the stored profile */
+    function populateForm() {
+      var profile = State.get('herday_profile');
+      if (!profile) return;
+      if (nameInput)      nameInput.value      = profile.name      || '';
+      if (userTypeInput)  userTypeInput.value  = profile.userType  || 'other';
+      if (wakeInput)      wakeInput.value      = profile.wakeTime  || '';
+      if (sleepInput)     sleepInput.value     = profile.sleepTime || '';
+      if (workStartInput) workStartInput.value = profile.workStart || '';
+      if (workEndInput)   workEndInput.value   = profile.workEnd   || '';
+    }
+
+    /** Wire form submission */
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Hide all errors first
+        if (nameError)      nameError.classList.remove('visible');
+        if (wakeSleepError) wakeSleepError.classList.remove('visible');
+        if (workError)      workError.classList.remove('visible');
+
+        var data = {
+          name:      nameInput      ? nameInput.value.trim()      : '',
+          userType:  userTypeInput  ? userTypeInput.value         : 'other',
+          wakeTime:  wakeInput      ? wakeInput.value             : '',
+          sleepTime: sleepInput     ? sleepInput.value            : '',
+          workStart: workStartInput ? workStartInput.value        : '',
+          workEnd:   workEndInput   ? workEndInput.value          : ''
+        };
+
+        var result = validateProfile(data);
+
+        if (!result.valid) {
+          // Show relevant error messages using object keys (errors is an object, not array)
+          if (result.errors.name && nameError) {
+            nameError.classList.add('visible');
+          }
+          if (result.errors.wakeSleep && wakeSleepError) {
+            wakeSleepError.classList.add('visible');
+          }
+          if (result.errors.workTime && workError) {
+            workError.classList.add('visible');
+          }
+          return;
+        }
+
+        // Preserve createdAt from existing profile
+        var existing = State.get('herday_profile') || {};
+        var profile = {
+          name:      data.name,
+          userType:  data.userType,
+          wakeTime:  data.wakeTime,
+          sleepTime: data.sleepTime,
+          workStart: data.workStart,
+          workEnd:   data.workEnd,
+          createdAt: existing.createdAt || new Date().toISOString()
+        };
+
+        State.set('herday_profile', profile);
+
+        // Restart reminder system with new settings
+        ReminderSystem.stop();
+        ReminderSystem.start();
+
+        // Show success toast
+        ReminderSystem.showToast('Settings saved! ✨', 'success');
+
+        // Re-render dashboard with updated profile
+        renderDashboard(profile);
+      });
+    }
+
+    // Register settings section with Router — pre-populate on navigate
+    Router.registerSection('settings', function () {
+      populateForm();
+    });
+  })();
+
+  /**
+   * renderDashboard(profile) — renders the dashboard section.
+   * Requirements: 1.2
+   */
+  function renderDashboard(profile) {
+    if (!profile) return;
+
+    // Determine time of day greeting
+    var hour = new Date().getHours();
+    var timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+
+    // Set greeting heading
+    var heading = document.getElementById('dashboard-heading');
+    if (heading) {
+      heading.textContent = 'Good ' + timeOfDay + ', ' + profile.name + '! 🌸';
+    }
+
+    // Set today's date
+    var dateEl = document.getElementById('dashboard-date');
+    if (dateEl) {
+      dateEl.textContent = new Date().toLocaleDateString(undefined, {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+    }
+
+    // Gather data for stats
+    var tasks   = TaskModule.getTasks();
+    var habits  = State.get('herday_habits')  || [];
+    var goals   = State.get('herday_goals')   || [];
+    var today   = new Date().toISOString().slice(0, 10);
+    var wellness = (State.get('herday_wellness') || []).find(function (e) { return e.date === today; }) || null;
+
+    var pending   = tasks.filter(function (t) { return !t.completed; });
+    var completed = tasks.filter(function (t) { return t.completed; });
+
+    // Best habit streak
+    var bestStreak = habits.reduce(function (best, h) {
+      return Math.max(best, HabitModule.getStreak(h.id));
+    }, 0);
+
+    // Update stat cards
+    var statPending = document.getElementById('stat-tasks-pending');
+    var statDone    = document.getElementById('stat-tasks-done');
+    var statStreak  = document.getElementById('stat-habits-streak');
+    var statGoals   = document.getElementById('stat-goals-count');
+
+    if (statPending) statPending.textContent = String(pending.length);
+    if (statDone)    statDone.textContent    = String(completed.length);
+    if (statStreak)  statStreak.textContent  = String(bestStreak);
+    if (statGoals)   statGoals.textContent   = String(goals.length);
+
+    // Top 3 pending tasks by priority
+    var priorityOrder = { high: 0, medium: 1, low: 2 };
+    var topTasks = pending.slice().sort(function (a, b) {
+      return (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1);
+    }).slice(0, 3);
+
+    var topTasksEl = document.getElementById('dashboard-top-tasks');
+    if (topTasksEl) {
+      topTasksEl.innerHTML = '';
+      if (topTasks.length === 0) {
+        var emptyP = document.createElement('p');
+        emptyP.className = 'text-muted text-sm';
+        emptyP.textContent = 'No pending tasks. Great job! 🎉';
+        topTasksEl.appendChild(emptyP);
+      } else {
+        var ul = document.createElement('ul');
+        ul.style.cssText = 'list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;';
+        topTasks.forEach(function (task) {
+          var li = document.createElement('li');
+          li.style.cssText = 'display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;';
+          var badge = document.createElement('span');
+          badge.className = 'badge badge-' + task.priority;
+          badge.textContent = task.priority;
+          var label = document.createElement('span');
+          label.textContent = task.title;
+          li.appendChild(badge);
+          li.appendChild(label);
+          ul.appendChild(li);
+        });
+        topTasksEl.appendChild(ul);
+      }
+    }
+
+    // Habit highlights
+    var habitsEl = document.getElementById('dashboard-habits');
+    if (habitsEl) {
+      habitsEl.innerHTML = '';
+      if (habits.length === 0) {
+        var emptyH = document.createElement('p');
+        emptyH.className = 'text-muted text-sm';
+        emptyH.textContent = 'No habits tracked yet.';
+        habitsEl.appendChild(emptyH);
+      } else {
+        var hul = document.createElement('ul');
+        hul.style.cssText = 'list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;';
+        habits.forEach(function (habit) {
+          var streak = HabitModule.getStreak(habit.id);
+          var li = document.createElement('li');
+          li.style.cssText = 'display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem;';
+          var nameSpan = document.createElement('span');
+          nameSpan.textContent = habit.name;
+          var streakSpan = document.createElement('span');
+          streakSpan.style.cssText = 'font-weight: 600; color: var(--color-peach-400);';
+          streakSpan.textContent = streak > 0 ? '🔥 ' + streak + ' day' + (streak !== 1 ? 's' : '') : '—';
+          li.appendChild(nameSpan);
+          li.appendChild(streakSpan);
+          hul.appendChild(li);
+        });
+        habitsEl.appendChild(hul);
+      }
+    }
+
+    // Wellness today
+    var wellnessEl = document.getElementById('dashboard-wellness');
+    if (wellnessEl) {
+      wellnessEl.innerHTML = '';
+      if (!wellness) {
+        var emptyW = document.createElement('p');
+        emptyW.className = 'text-muted text-sm';
+        emptyW.textContent = 'Log your mood and water intake.';
+        wellnessEl.appendChild(emptyW);
+      } else {
+        var wul = document.createElement('ul');
+        wul.style.cssText = 'list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;';
+
+        var moodLi = document.createElement('li');
+        var moodLabel = document.createElement('span');
+        moodLabel.textContent = 'Mood: ';
+        moodLabel.style.fontWeight = '600';
+        var moodVal = document.createElement('span');
+        moodVal.textContent = wellness.mood ? wellness.mood + (wellness.moodNote ? ' — ' + wellness.moodNote : '') : 'Not logged';
+        moodLi.appendChild(moodLabel);
+        moodLi.appendChild(moodVal);
+
+        var waterLi = document.createElement('li');
+        var waterLabel = document.createElement('span');
+        waterLabel.textContent = 'Water: ';
+        waterLabel.style.fontWeight = '600';
+        var waterVal = document.createElement('span');
+        waterVal.textContent = (wellness.waterGlasses || 0) + ' glasses 💧';
+        waterLi.appendChild(waterLabel);
+        waterLi.appendChild(waterVal);
+
+        wul.appendChild(moodLi);
+        wul.appendChild(waterLi);
+        wellnessEl.appendChild(wul);
+      }
+    }
+  }
+
+  /**
+   * initApp(profile) — main app initialization.
+   * - Hides the onboarding modal (ensures it's hidden)
+   * - Shows the app shell (#app-shell)
+   * - Calls renderDashboard(profile)
+   * - Calls ReminderSystem.start()
+   * - Navigates to the dashboard section via Router
+   * Requirements: 1.1, 1.2, 2.5
+   */
+  function initApp(profile) {
+    // Ensure onboarding modal is hidden
+    hideOnboarding();
+
+    // Show the app shell
+    document.getElementById('app-shell').classList.remove('hidden');
+
+    // Render dashboard
+    renderDashboard(profile);
+
+    // Navigate to dashboard via Router
+    Router.navigate('dashboard');
+
+    // Start reminder system (Req 9.1)
+    ReminderSystem.start();
+  }
+
+  // =====================================================
+  // BOOTSTRAP — DOMContentLoaded
+  // Requirements: 1.1, 1.2, 2.5
+  // =====================================================
+  document.addEventListener('DOMContentLoaded', function () {
+    const profile = State.get('herday_profile');
+    if (!profile) {
+      // First-time user or corrupt data — treat as first-time
+      showOnboarding();
+    } else {
+      initApp(profile);
+    }
+  });
+</script>
+</body>
+</html>
